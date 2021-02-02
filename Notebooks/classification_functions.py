@@ -28,7 +28,7 @@ def conf_matrix(model, X_test, y_test):
     print(y_test.value_counts())
     conf = confusion_matrix(y_true = y_test, y_pred = preds)
     plt.figure(figsize=(8,8))
-    sns.heatmap(conf, cmap=plt.cm.Blues, annot=True, square=True, fmt='d',
+    sns.heatmap(conf, cmap=plt.cm.get_cmap('Blues'), annot=True, square=True, fmt='d',
                xticklabels=['Linux', 'MacOS', 'Windows'],
                yticklabels=['Linux', 'MacOS', 'Windows'])
 
