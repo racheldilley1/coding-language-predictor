@@ -29,7 +29,7 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val):
             preds = (lm.predict_proba(X_val)[:, 1] >= threshold_val)
         else:
             preds = lm.predict(X_val)
-        print(preds)
+    
         log_score.append(round(lm.score( X_val, y_val), 3))
         precision.append(round(precision_score( y_val, preds, average='macro'), 3))
         recall.append(round(recall_score( y_val, preds, average='macro'), 3))
@@ -53,8 +53,8 @@ def knn_classification(X_train, y_train, k):
         X_train, y_train = X[train_ind], y[train_ind]
         X_val, y_val = X[val_ind], y[val_ind]
 
-        precision.append(round(precision_score( y_val, knn.predict(X_val)), 3))
-        recall.append(round(recall_score( y_val, knn.predict(X_val)), 3))
+        precision.append(round(precision_score( y_val, knn.predict(X_val), average='macro'), 3))
+        recall.append(round(recall_score( y_val, knn.predict(X_val), average='macro'), 3))
 
     print(f'KNN Classification with k = {k}:\n'
           f'Precision score: {np.mean(precision)},\n'
