@@ -29,10 +29,10 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val):
             preds = (lm.predict_proba(X_val)[:, 1] >= threshold_val)
         else:
             preds = lm.predict(X_val)
-
+        print(preds)
         log_score.append(round(lm.score( X_val, y_val), 3))
-        precision.append(round(precision_score( y_val, preds), 3))
-        recall.append(round(recall_score( y_val, preds), 3))
+        precision.append(round(precision_score( y_val, preds, average='macro'), 3))
+        recall.append(round(recall_score( y_val, preds, average='macro'), 3))
 
     print(f'logistic regression with C = {regularization}:\n'
           f'Logistic score: {np.mean(log_score)},\n'
