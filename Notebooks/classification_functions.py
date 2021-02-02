@@ -60,7 +60,7 @@ def knn_classification(X_train, y_train, k, beta):
         precision.append(round(precision_score( y_val, knn.predict(X_val), average='macro'), 3))
         recall.append(round(recall_score( y_val, knn.predict(X_val), average='macro'), 3))
         f1.append(round(f1_score( y_val, knn.predict(X_val), average='macro'), 3))
-        fbeta.append(round(fbeta_score( y_val, preds, beta, average='macro'), 3))
+        fbeta.append(round(fbeta_score( y_val, knn.predict(X_val), beta, average='macro'), 3))
 
     print(f'KNN Classification with k = {k}:\n'
           f'Precision score: {np.mean(precision)},\n'
