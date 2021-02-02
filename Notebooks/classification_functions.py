@@ -1,7 +1,8 @@
 import pandas as pd
+import numpy as np
 
 #modeling
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import train_test_split, KFold
 from sklearn.metrics import roc_auc_score, confusion_matrix, roc_curve
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
@@ -18,14 +19,26 @@ def logistic_model(X_train, y_train, class_type):
     return lm
 
 def knn_classification(X_train, y_train, k):
-    knn = KNeighborsClassifier(n_neighbors=k)
-    knn.fit(X_train, y_train)
-    print(knn.score(X_train, y_train))
+    #this helps with the way kf will generate indices below
+    X, y = np.array(X_train), np.array(y_train)
+    kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
+    val_score = []
+
+    for train_ind, val_ind in kf.split(X, y):
+        X_train, y_train = X[train_ind], y[train_ind]
+        X_val, y_val = X[val_ind], y[val_ind]
+
+        knn = KNeighborsClassifier(n_neighbors=k) #k nearest neighbors
+        knn.fit(X_train, y_train)
+        val_score.append(round(knn.score(X_val, y_val), 3))
+
+    print(f'KNN Classification with k = {k}:\n'
+          f'Val score: {np.mean(val_score)},\n')
+    
     return knn
 
 def conf_matrix(model, X_test, y_test):
     preds = model.predict(X_test)
-    print(y_test.value_counts())
     conf = confusion_matrix(y_true = y_test, y_pred = preds)
     plt.figure(figsize=(6,6))
     sns.heatmap(conf, cmap=plt.cm.get_cmap('Blues'), annot=True, square=True, fmt='d',
