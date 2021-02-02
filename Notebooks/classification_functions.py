@@ -3,7 +3,7 @@ import numpy as np
 
 #modeling
 from sklearn.model_selection import train_test_split, KFold
-from sklearn.metrics import roc_auc_score, confusion_matrix, roc_curve, precision_score, recall_score
+from sklearn.metrics import roc_auc_score, confusion_matrix, roc_curve, precision_score, recall_score, f1_score, fbeta_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
@@ -12,17 +12,17 @@ from sklearn.neighbors import KNeighborsClassifier
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def logistic_model(X_train, y_train, regularization, threshold, threshold_val):
+def logistic_model(X_train, y_train, regularization, threshold, threshold_val, beta):
     #this helps with the way kf will generate indices below
     X, y = np.array(X_train), np.array(y_train)
     kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    precision, recall, log_score = [] , [], []
+    precision, recall, log_score, f1, fbeta = [] , [], [], [], []
 
     for train_ind, val_ind in kf.split(X, y):
         X_train, y_train = X[train_ind], y[train_ind]
         X_val, y_val = X[val_ind], y[val_ind]
 
-        lm = LogisticRegression(C=regularization)
+        lm = LogisticRegression(C=regularization, max_iter=10000)
         lm.fit(X_train, y_train)
 
         if threshold:
@@ -33,18 +33,22 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val):
         log_score.append(round(lm.score( X_val, y_val), 3))
         precision.append(round(precision_score( y_val, preds, average='macro'), 3))
         recall.append(round(recall_score( y_val, preds, average='macro'), 3))
+        f1.append(round(f1_score( y_val, preds, average='macro'), 3))
+        fbeta.append(round(fbeta_score( y_val, preds, beta, average='macro'), 3))
 
     print(f'logistic regression with C = {regularization}:\n'
           f'Logistic score: {np.mean(log_score)},\n'
           f'Precision score: {np.mean(precision)},\n'
-          f'Recall score: {np.mean(recall)},\n')
+          f'Recall score: {np.mean(recall)},\n'
+          f'f1 score: {np.mean(f1)},\n'
+          f'fbeta score for beta = {beta}: {np.mean(fbeta)},\n')
     return lm
 
-def knn_classification(X_train, y_train, k):
+def knn_classification(X_train, y_train, k, beta):
     #this helps with the way kf will generate indices below
     X, y = np.array(X_train), np.array(y_train)
     kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    precision, recall = [] , []
+    precision, recall, f1, fbeta = [] , [], [], []
 
     knn = KNeighborsClassifier(n_neighbors=k) #k nearest neighbors
     knn.fit(X_train, y_train)
@@ -55,10 +59,14 @@ def knn_classification(X_train, y_train, k):
 
         precision.append(round(precision_score( y_val, knn.predict(X_val), average='macro'), 3))
         recall.append(round(recall_score( y_val, knn.predict(X_val), average='macro'), 3))
+        f1.append(round(f1_score( y_val, knn.predict(X_val), average='macro'), 3))
+        fbeta.append(round(fbeta_score( y_val, preds, beta, average='macro'), 3))
 
     print(f'KNN Classification with k = {k}:\n'
           f'Precision score: {np.mean(precision)},\n'
-          f'Recall score: {np.mean(recall)},\n')
+          f'Recall score: {np.mean(recall)},\n'
+          f'f1 score: {np.mean(f1)},\n'
+          f'fbeta score for beta = {beta}: {np.mean(fbeta)},\n')
     
     return knn
 
