@@ -13,9 +13,21 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 def logistic_model(X_train, y_train, class_type):
-    lm = LogisticRegression(solver='newton-cg', multi_class=class_type)
-    lm.fit(X_train, y_train)
-    print(lm.score(X_train, y_train))
+    #this helps with the way kf will generate indices below
+    X, y = np.array(X_train), np.array(y_train)
+    kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
+    val_score = []
+
+    for train_ind, val_ind in kf.split(X, y):
+        X_train, y_train = X[train_ind], y[train_ind]
+        X_val, y_val = X[val_ind], y[val_ind]
+
+        lm = LogisticRegression(solver='newton-cg', multi_class=class_type)
+        lm.fit(X_train, y_train)
+        val_score.append(round(lm.score(X_val, y_val), 3))
+
+    print(f'{class_type} logistic regression:\n'
+          f'Val score: {np.mean(val_score)},\n')
     return lm
 
 def knn_classification(X_train, y_train, k):
