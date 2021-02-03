@@ -47,7 +47,7 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b
           f'f1 score: {np.mean(f1)},\n'
           f'fbeta score for beta = {b}: {np.mean(fbeta)},\n'
           f'ROC AUC score: {np.mean(auc)},\n')
-          plot_roc(y_val, preds_enc)
+    plot_roc(y_val, preds_enc)
           
     return lm
 
@@ -79,7 +79,7 @@ def knn_classification(X_train, y_train, k, b):
           f'f1 score: {np.mean(f1)},\n'
           f'fbeta score for beta = {b}: {np.mean(fbeta)},\n'
           f'ROC AUC score: {np.mean(auc)},\n')
-          plot_roc(y_val, knn.predict(X_val))
+    plot_roc(y_val, knn.predict(X_val))
     
     return knn
 
