@@ -207,9 +207,9 @@ def plot_roc(y_test, preds):
         fpr[i], tpr[i], _ = roc_curve(y_test_enc.iloc[:, i], preds_enc.iloc[:, i])
         roc_auc[i] = auc(fpr[i], tpr[i])
 
-    fpr['macro'] = fpr
-    tpr['macro'] = tpr
-    roc_auc = auc(fpr['macro'], tpr['macro'])
+    # fpr['macro'] = fpr
+    # tpr['macro'] = tpr
+    # roc_auc = auc(fpr['macro'], tpr['macro'])
 
     plt.figure()
     # plt.plot(fpr["micro"], tpr["micro"],
@@ -217,10 +217,10 @@ def plot_roc(y_test, preds):
     #             ''.format(roc_auc["micro"]),
     #         color='deeppink', linestyle=':', linewidth=4)
 
-    plt.plot(fpr["macro"], tpr["macro"],
-            label='macro-average ROC curve (area = {0:0.2f})'
-                ''.format(roc_auc["macro"]),
-            color='navy', linestyle=':', linewidth=4)
+    # plt.plot(fpr["macro"], tpr["macro"],
+    #         label='macro-average ROC curve (area = {0:0.2f})'
+    #             ''.format(roc_auc["macro"]),
+    #         color='navy', linestyle=':', linewidth=4)
 
     colors = ['aqua', 'darkorange', 'cornflowerblue']
     for i, color in zip(range(3), colors):
