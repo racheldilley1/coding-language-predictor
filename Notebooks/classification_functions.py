@@ -211,7 +211,7 @@ def plot_roc(y_test, X_test, model):
     probs = model.predict_proba(X_test)
 
     for i in range(3):
-        fpr[i], tpr[i], _ = roc_curve(y_test_enc.iloc[:, i], probs.iloc[:, i])
+        fpr[i], tpr[i], _ = roc_curve(y_test_enc.iloc[:, i], probs[:, i])
         roc_auc[i] = auc(fpr[i], tpr[i])
 
     # fpr['macro'] = fpr
