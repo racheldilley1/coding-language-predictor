@@ -69,9 +69,9 @@ def random_forest(X_train, y_train, estimators, b):
         fbeta.append(round(fbeta_score( y_val, preds, beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
         
         y_val_enc = pd.get_dummies(y_val)
-        preds_enc = pd.get_dummies(preds)
-        auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro', multi_class='ovr'), 3))
-        logl.append(round(log_loss( y_val_enc, preds_enc), 3))
+        probs = rf.predict_proba(X_val)
+        auc.append(round(roc_auc_score( y_val_enc, probs, average='macro', multi_class='ovr'), 3))
+        logl.append(round(log_loss( y_val, probs), 3))
 
     print(f'Random Forest with {estimators} estimators:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
@@ -101,9 +101,9 @@ def decision_tree(X_train, y_train, depth, b):
         fbeta.append(round(fbeta_score( y_val, preds, beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
         
         y_val_enc = pd.get_dummies(y_val)
-        preds_enc = pd.get_dummies(preds)
-        auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro', multi_class='ovr'), 3))
-        logl.append(round(log_loss( y_val_enc, preds_enc), 3))
+        probs = dt.predict_proba(X_val)
+        auc.append(round(roc_auc_score( y_val_enc, probs, average='macro', multi_class='ovr'), 3))
+        logl.append(round(log_loss( y_val, probs), 3))
 
     print(f'Decision Tree with max depth of {depth}:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
@@ -137,9 +137,9 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b
         fbeta.append(round(fbeta_score( y_val, preds, beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
         
         y_val_enc = pd.get_dummies(y_val)
-        preds_enc = pd.get_dummies(preds)
-        auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro', multi_class='ovr'), 3))
-        logl.append(round(log_loss( y_val_enc, preds_enc), 3))
+        probs = lm.predict_proba(X_val)
+        auc.append(round(roc_auc_score( y_val_enc, probs, average='macro', multi_class='ovr'), 3))
+        logl.append(round(log_loss( y_val, probs), 3))
 
     print(f'logistic regression with C = {regularization}:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
@@ -168,9 +168,9 @@ def knn_classification(X_train, y_train, k, b):
         fbeta.append(round(fbeta_score( y_val, knn.predict(X_val), beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
         
         y_val_enc = pd.get_dummies(y_val)
-        preds_enc = pd.get_dummies(knn.predict(X_val))
-        auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro', multi_class='ovr'), 3))
-        logl.append(round(log_loss( y_val_enc, preds_enc), 3))
+        probs = knn.predict_proba(X_val)
+        auc.append(round(roc_auc_score( y_val_enc, probs, average='macro', multi_class='ovr'), 3))
+        logl.append(round(log_loss( y_val, probs), 3))
 
     print(f'KNN Classification with k = {k}:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
