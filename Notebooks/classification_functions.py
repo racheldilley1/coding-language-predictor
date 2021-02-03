@@ -4,7 +4,7 @@ import numpy as np
 #modeling
 from sklearn.model_selection import train_test_split, KFold
 from sklearn.metrics import roc_auc_score, confusion_matrix, roc_curve, precision_score, recall_score, f1_score, fbeta_score
-from sklearn.preprocessing import StandardScaler
+from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 
@@ -35,7 +35,13 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b
         recall.append(round(recall_score( y_val, preds, average='macro'), 3))
         f1.append(round(f1_score( y_val, preds, average='macro'), 3))
         fbeta.append(round(fbeta_score( y_val, preds, beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
-        auc.append(round(roc_auc_score( y_val, preds, average='macro'), 3))
+        
+        le = LabelEncoder()
+        le.fit(y_val.astype(str))
+        y_val_enc = le.transform(y_val.astype(str))
+        le.fit(preds.astype(str))
+        preds_enc = le.transform(preds.astype(str))
+        auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro'), 3))
 
     print(f'logistic regression with C = {regularization}:\n'
           f'Logistic score: {np.mean(log_score)},\n'
