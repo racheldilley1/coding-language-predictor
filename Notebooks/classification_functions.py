@@ -207,23 +207,49 @@ def plot_roc(y_test, preds):
         fpr[i], tpr[i], _ = roc_curve(y_test_enc.iloc[:, i], preds_enc.iloc[:, i])
         roc_auc[i] = auc(fpr[i], tpr[i])
 
-    # Plot of a ROC curve for a specific class
-    for i in range(3):
-        plt.figure()
-        plt.plot(fpr[i], tpr[i], label='ROC curve (area = %0.2f)' % roc_auc[i], lw=2)
-        #plt.plot([0, 1], [0, 1], 'k--')
-        plt.plot([0,1],[0,1],c='violet',ls='--')
-        plt.xlim([0.0, 1.0])
-        plt.ylim([0.0, 1.05])
-        plt.xlabel('False Positive Rate')
-        plt.ylabel('True Positive Rate')
-        plt.title('Receiver operating characteristic example')
-        plt.legend(loc="lower right")
-        plt.show()
-    # fpr, tpr, thresholds = roc_curve(y_test, preds)
+    fpr['macro'] = fpr
+    tpr['macro'] = tpr
+    roc_auc = auc(fpr['macro'], tpr['macro'])
 
-    # plt.plot(fpr, tpr,lw=2)
-    # plt.plot([0,1],[0,1],c='violet',ls='--')
+    plt.figure()
+    # plt.plot(fpr["micro"], tpr["micro"],
+    #         label='micro-average ROC curve (area = {0:0.2f})'
+    #             ''.format(roc_auc["micro"]),
+    #         color='deeppink', linestyle=':', linewidth=4)
+
+    plt.plot(fpr["macro"], tpr["macro"],
+            label='macro-average ROC curve (area = {0:0.2f})'
+                ''.format(roc_auc["macro"]),
+            color='navy', linestyle=':', linewidth=4)
+
+    colors = ['aqua', 'darkorange', 'cornflowerblue']
+    for i, color in zip(range(3), colors):
+        plt.plot(fpr[i], tpr[i], color=color, lw=2,
+                label='ROC curve of class {0} (area = {1:0.2f})'
+                ''.format(i, roc_auc[i]))
+
+    plt.plot([0, 1], [0, 1], 'k--', lw=2)
+    plt.xlim([0.0, 1.0])
+    plt.ylim([0.0, 1.05])
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('Some extension of Receiver operating characteristic to multi-class')
+    plt.legend(loc="lower right")
+    plt.show()
+
+    # Plot of a ROC curve for a specific class
+    # for i in range(3):
+    #     plt.figure()
+    #     plt.plot(fpr[i], tpr[i], label='ROC curve (area = %0.2f)' % roc_auc[i], lw=2)
+    #     plt.plot([0,1],[0,1],c='violet',ls='--')
+    #     plt.xlim([0.0, 1.0])
+    #     plt.ylim([0.0, 1.05])
+    #     plt.xlabel('False Positive Rate')
+    #     plt.ylabel('True Positive Rate')
+    #     plt.title('Receiver operating characteristic example')
+    #     plt.legend(loc="lower right")
+    #     plt.show()
+
 
 
     
