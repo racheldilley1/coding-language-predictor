@@ -225,8 +225,8 @@ def plot_roc(y_test, preds):
     colors = ['aqua', 'darkorange', 'cornflowerblue']
     for i, color, os in zip(range(3), colors, op_sys):
         plt.plot(fpr[i], tpr[i], color=color, lw=2,
-                label='ROC curve of class {os} (area = {1:0.2f})'
-                ''.format(i, roc_auc[i]))
+                label='ROC curve of class {0} (area = {1:0.2f})'
+                ''.format(os, roc_auc[i]))
 
     plt.plot([0, 1], [0, 1], 'k--', lw=2)
     plt.xlim([0.0, 1.0])
