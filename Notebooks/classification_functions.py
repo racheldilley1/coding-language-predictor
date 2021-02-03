@@ -22,7 +22,7 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b
         X_train, y_train = X[train_ind], y[train_ind]
         X_val, y_val = X[val_ind], y[val_ind]
 
-        lm = LogisticRegression(C=regularization, max_iter=10000)
+        lm = LogisticRegression(C=regularization, max_iter=10000, multi_class='ovr')
         lm.fit(X_train, y_train)
 
         if threshold:
