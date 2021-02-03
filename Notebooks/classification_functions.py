@@ -36,9 +36,10 @@ def multinomial_nb(X_train, y_train, b):
         fbeta.append(round(fbeta_score( y_val, preds, beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
         
         y_val_enc = pd.get_dummies(y_val)
-        preds_enc = pd.get_dummies(preds)
-        auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro', multi_class='ovr'), 3))
-        logl.append(round(log_loss( y_val_enc, preds_enc), 3))
+        #preds_enc = pd.get_dummies(preds)
+        probs = mnb.predict_proba(X_val)
+        auc.append(round(roc_auc_score( y_val_enc, probs, average='macro', multi_class='ovr'), 3))
+        logl.append(round(log_loss( y_val, probs), 3))
 
     print(f'Multinomial NB:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
@@ -244,18 +245,6 @@ def plot_roc(y_test, X_test, model):
     plt.legend(loc="lower right")
     plt.show()
 
-    # Plot of a ROC curve for a specific class
-    # for i in range(3):
-    #     plt.figure()
-    #     plt.plot(fpr[i], tpr[i], label='ROC curve (area = %0.2f)' % roc_auc[i], lw=2)
-    #     plt.plot([0,1],[0,1],c='violet',ls='--')
-    #     plt.xlim([0.0, 1.0])
-    #     plt.ylim([0.0, 1.05])
-    #     plt.xlabel('False Positive Rate')
-    #     plt.ylabel('True Positive Rate')
-    #     plt.title('Receiver operating characteristic example')
-    #     plt.legend(loc="lower right")
-    #     plt.show()
 
 
 
