@@ -7,16 +7,54 @@ from sklearn.metrics import roc_auc_score, confusion_matrix, roc_curve, precisio
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
+from sklearn.tree import DecisionTreeClassifier
 
 # plotting
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+def decision_tree(X_train, y_train, depth, b):
+    #this helps with the way kf will generate indices below
+    X, y = np.array(X_train), np.array(y_train)
+    kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
+    precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
+
+    for train_ind, val_ind in kf.split(X, y):
+        X_train, y_train = X[train_ind], y[train_ind]
+        X_val, y_val = X[val_ind], y[val_ind]
+
+        dt = DecisionTreeClassifier(max_depth=depth)
+        dt.fit(X_train, y_train)
+        preds = dt.predict(X_val)
+
+        ac.append(round(dt.score( X_val, y_val), 3))
+        precision.append(round(precision_score( y_val, preds, average='macro'), 3))
+        recall.append(round(recall_score( y_val, preds, average='macro'), 3))
+        f1.append(round(f1_score( y_val, preds, average='macro'), 3))
+        fbeta.append(round(fbeta_score( y_val, preds, beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
+        
+        y_val_enc = pd.get_dummies(y_val)
+        preds_enc = pd.get_dummies(preds)
+        auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro', multi_class='ovr'), 3))
+        logl.append(round(log_loss( y_val_enc, preds_enc), 3))
+
+    print(f'Decision Tree with max depth of {depth}:\n'
+          f'Accuracy: {np.mean(ac)},\n'
+          f'Precision score: {np.mean(precision)},\n'
+          f'Recall score: {np.mean(recall)},\n'
+          f'f1 score: {np.mean(f1)},\n'
+          f'fbeta score for beta = {b}: {np.mean(fbeta)},\n'
+          f'ROC AUC score: {np.mean(auc)},\n'
+          f'Log-loss: {np.mean(logl)},\n')
+    plot_roc(y_val, preds)
+          
+    return dt
+
 def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b):
     #this helps with the way kf will generate indices below
     X, y = np.array(X_train), np.array(y_train)
     kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    precision, recall, f1, fbeta, auc, logl = [] , [], [], [], [], []
+    precision, recall, f1, fbeta, auc, logl , ac = [] , [], [], [], [], [], []
 
     for train_ind, val_ind in kf.split(X, y):
         X_train, y_train = X[train_ind], y[train_ind]
@@ -30,6 +68,7 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b
         else:
             preds = lm.predict(X_val)
     
+        ac.append(round(lm.score( X_val, y_val), 3))
         precision.append(round(precision_score( y_val, preds, average='macro'), 3))
         recall.append(round(recall_score( y_val, preds, average='macro'), 3))
         f1.append(round(f1_score( y_val, preds, average='macro'), 3))
@@ -41,6 +80,7 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b
         logl.append(round(log_loss( y_val_enc, preds_enc), 3))
 
     print(f'logistic regression with C = {regularization}:\n'
+          f'Accuracy: {np.mean(ac)},\n'
           f'Precision score: {np.mean(precision)},\n'
           f'Recall score: {np.mean(recall)},\n'
           f'f1 score: {np.mean(f1)},\n'
@@ -55,7 +95,7 @@ def knn_classification(X_train, y_train, k, b):
     #this helps with the way kf will generate indices below
     X, y = np.array(X_train), np.array(y_train)
     kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    precision, recall, f1, fbeta, auc, logl = [] , [], [], [], [], []
+    precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
 
     knn = KNeighborsClassifier(n_neighbors=k) #k nearest neighbors
     knn.fit(X_train, y_train)
@@ -64,6 +104,7 @@ def knn_classification(X_train, y_train, k, b):
         X_train, y_train = X[train_ind], y[train_ind]
         X_val, y_val = X[val_ind], y[val_ind]
 
+        ac.append(round(knn.score( X_val, y_val), 3))
         precision.append(round(precision_score( y_val, knn.predict(X_val), average='macro'), 3))
         recall.append(round(recall_score( y_val, knn.predict(X_val), average='macro'), 3))
         f1.append(round(f1_score( y_val, knn.predict(X_val), average='macro'), 3))
@@ -75,6 +116,7 @@ def knn_classification(X_train, y_train, k, b):
         logl.append(round(log_loss( y_val_enc, preds_enc), 3))
 
     print(f'KNN Classification with k = {k}:\n'
+          f'Accuracy: {np.mean(ac)},\n'
           f'Precision score: {np.mean(precision)},\n'
           f'Recall score: {np.mean(recall)},\n'
           f'f1 score: {np.mean(f1)},\n'
