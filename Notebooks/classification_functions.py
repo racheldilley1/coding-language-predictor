@@ -22,7 +22,7 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b
         X_train, y_train = X[train_ind], y[train_ind]
         X_val, y_val = X[val_ind], y[val_ind]
 
-        lm = LogisticRegression(C=regularization, max_iter=10000, multi_class='ovr')
+        lm = LogisticRegression(C=regularization, max_iter=10000)
         lm.fit(X_train, y_train)
 
         if threshold:
@@ -41,7 +41,7 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b
         y_val_enc = le.transform(y_val.astype(str))
         le.fit(preds.astype(str))
         preds_enc = le.transform(preds.astype(str))
-        auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro'), 3))
+        auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro', multi_class='ovr'), 3))
 
     print(f'logistic regression with C = {regularization}:\n'
           f'Logistic score: {np.mean(log_score)},\n'
