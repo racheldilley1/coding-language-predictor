@@ -105,7 +105,7 @@ def plot_roc(y_test, preds):
     preds_enc = pd.get_dummies(preds)
 
     for i in range(3):
-        fpr[i], tpr[i], _ = roc_curve(y_test_enc[:, i], preds_enc[:, i])
+        fpr[i], tpr[i], _ = roc_curve(y_test_enc.iloc[:, i], preds_enc.iloc[:, i])
         roc_auc[i] = auc(fpr[i], tpr[i])
 
     # Plot of a ROC curve for a specific class
