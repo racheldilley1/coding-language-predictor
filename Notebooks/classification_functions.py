@@ -42,7 +42,8 @@ def multinomial_nb(X_train, y_train, b):
 
     print(f'Multinomial NB:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-    plot_roc(y_val, preds)
+    #plot_roc(y_val, preds)
+    plot_roc(y_val, X_val, mnb)
           
     return mnb
 
@@ -73,7 +74,8 @@ def random_forest(X_train, y_train, estimators, b):
 
     print(f'Random Forest with {estimators} estimators:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-    plot_roc(y_val, preds)
+    #plot_roc(y_val, preds)
+    plot_roc(y_val, X_val, rf)
           
     return rf
 
@@ -104,7 +106,8 @@ def decision_tree(X_train, y_train, depth, b):
 
     print(f'Decision Tree with max depth of {depth}:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-    plot_roc(y_val, preds)
+    #plot_roc(y_val, preds)
+    plot_roc(y_val, X_val, dt)
           
     return dt
 
@@ -139,7 +142,8 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b
 
     print(f'logistic regression with C = {regularization}:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-    plot_roc(y_val, preds)
+    #plot_roc(y_val, preds)
+    plot_roc(y_val, X_val, lm)
           
     return lm
 
@@ -169,7 +173,8 @@ def knn_classification(X_train, y_train, k, b):
 
     print(f'KNN Classification with k = {k}:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-    plot_roc(y_val, knn.predict(X_val))
+    #plot_roc(y_val, knn.predict(X_val))
+    plot_roc(y_val, X_val, knn)
     
     return knn
 
@@ -194,14 +199,14 @@ def conf_matrix(y_test, preds):
     plt.ylabel('Actual')
     plt.title('Confusion matrix')
 
-def plot_roc(y_test, preds):
+def plot_roc(y_test, X_test, model):
     # Compute ROC curve and ROC area for each class
     fpr = dict()
     tpr = dict()
     roc_auc = dict()
 
     y_test_enc = pd.get_dummies(y_test)
-    preds_enc = pd.get_dummies(preds)
+    preds_enc = pd.get_dummies(model.predict_proba(X_test))
 
     for i in range(3):
         fpr[i], tpr[i], _ = roc_curve(y_test_enc.iloc[:, i], preds_enc.iloc[:, i])
