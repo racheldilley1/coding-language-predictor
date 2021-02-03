@@ -221,11 +221,11 @@ def plot_roc(y_test, preds):
     #         label='macro-average ROC curve (area = {0:0.2f})'
     #             ''.format(roc_auc["macro"]),
     #         color='navy', linestyle=':', linewidth=4)
-    print(y_test_enc.columns)
+    op_sys = y_test_enc.columns
     colors = ['aqua', 'darkorange', 'cornflowerblue']
-    for i, color in zip(range(3), colors):
+    for i, color, os in zip(range(3), colors, op_sys):
         plt.plot(fpr[i], tpr[i], color=color, lw=2,
-                label='ROC curve of class {0} (area = {1:0.2f})'
+                label='ROC curve of class {os} (area = {1:0.2f})'
                 ''.format(i, roc_auc[i]))
 
     plt.plot([0, 1], [0, 1], 'k--', lw=2)
