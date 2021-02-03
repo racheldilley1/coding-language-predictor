@@ -8,10 +8,48 @@ from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
 
 # plotting
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+def random_forest(X_train, y_train, estimators, b):
+    #this helps with the way kf will generate indices below
+    X, y = np.array(X_train), np.array(y_train)
+    kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
+    precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
+
+    for train_ind, val_ind in kf.split(X, y):
+        X_train, y_train = X[train_ind], y[train_ind]
+        X_val, y_val = X[val_ind], y[val_ind]
+
+        rf = RandomForestClassifier(n_estimators=estimators)
+        rf.fit(X_train, y_train)
+        preds = rf.predict(X_val)
+
+        ac.append(round(rf.score( X_val, y_val), 3))
+        precision.append(round(precision_score( y_val, preds, average='macro'), 3))
+        recall.append(round(recall_score( y_val, preds, average='macro'), 3))
+        f1.append(round(f1_score( y_val, preds, average='macro'), 3))
+        fbeta.append(round(fbeta_score( y_val, preds, beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
+        
+        y_val_enc = pd.get_dummies(y_val)
+        preds_enc = pd.get_dummies(preds)
+        auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro', multi_class='ovr'), 3))
+        logl.append(round(log_loss( y_val_enc, preds_enc), 3))
+
+    print(f'Random Forest with {estimators} estimators:\n'
+          f'Accuracy: {np.mean(ac)},\n'
+          f'Precision score: {np.mean(precision)},\n'
+          f'Recall score: {np.mean(recall)},\n'
+          f'f1 score: {np.mean(f1)},\n'
+          f'fbeta score for beta = {b}: {np.mean(fbeta)},\n'
+          f'ROC AUC score: {np.mean(auc)},\n'
+          f'Log-loss: {np.mean(logl)},\n')
+    plot_roc(y_val, preds)
+          
+    return rf
 
 def decision_tree(X_train, y_train, depth, b):
     #this helps with the way kf will generate indices below
