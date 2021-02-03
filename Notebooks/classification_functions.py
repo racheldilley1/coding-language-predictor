@@ -3,7 +3,7 @@ import numpy as np
 
 #modeling
 from sklearn.model_selection import train_test_split, KFold
-from sklearn.metrics import roc_auc_score, confusion_matrix, roc_curve, precision_score, recall_score, f1_score, fbeta_score
+from sklearn.metrics import roc_auc_score, confusion_matrix, roc_curve, precision_score, recall_score, f1_score, fbeta_score, auc
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
@@ -96,15 +96,38 @@ def conf_matrix(y_test, preds):
     plt.title('Confusion matrix')
 
 def plot_roc(y_test, preds):
+    # Compute ROC curve and ROC area for each class
+    fpr = dict()
+    tpr = dict()
+    roc_auc = dict()
 
-    fpr, tpr, thresholds = roc_curve(y_test, preds)
+    y_test_enc = pd.get_dummies(y_test)
+    preds_enc = pd.get_dummies(preds)
 
-    plt.plot(fpr, tpr,lw=2)
-    plt.plot([0,1],[0,1],c='violet',ls='--')
-    plt.xlim([-0.05,1.05])
-    plt.ylim([-0.05,1.05])
+    for i in range(3):
+        fpr[i], tpr[i], _ = roc_curve(y_test_enc[:, i], preds_enc[:, i])
+        roc_auc[i] = auc(fpr[i], tpr[i])
 
-    plt.xlabel('False positive rate')
-    plt.ylabel('True positive rate')
-    plt.title('ROC curve for fraud problem')
+    # Plot of a ROC curve for a specific class
+    for i in range(3):
+        plt.figure()
+        plt.plot(fpr[i], tpr[i], label='ROC curve (area = %0.2f)' % roc_auc[i])
+        plt.plot([0, 1], [0, 1], 'k--')
+        plt.xlim([0.0, 1.0])
+        plt.ylim([0.0, 1.05])
+        plt.xlabel('False Positive Rate')
+        plt.ylabel('True Positive Rate')
+        plt.title('Receiver operating characteristic example')
+        plt.legend(loc="lower right")
+        plt.show()
+    # fpr, tpr, thresholds = roc_curve(y_test, preds)
+
+    # plt.plot(fpr, tpr,lw=2)
+    # plt.plot([0,1],[0,1],c='violet',ls='--')
+    # plt.xlim([-0.05,1.05])
+    # plt.ylim([-0.05,1.05])
+
+    # plt.xlabel('False positive rate')
+    # plt.ylabel('True positive rate')
+    # plt.title('ROC curve for fraud problem')
     
