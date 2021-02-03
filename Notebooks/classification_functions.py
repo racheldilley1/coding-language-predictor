@@ -36,11 +36,6 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b
         f1.append(round(f1_score( y_val, preds, average='macro'), 3))
         fbeta.append(round(fbeta_score( y_val, preds, beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
         
-        # le = LabelEncoder()
-        # le.fit(y_val.astype(str))
-        # y_val_enc = le.transform(y_val.astype(str))
-        # le.fit(preds.astype(str))
-        # preds_enc = le.transform(preds.astype(str))
         y_val_enc = pd.get_dummies(y_val)
         preds_enc = pd.get_dummies(preds)
         auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro', multi_class='ovr'), 3))
@@ -72,7 +67,10 @@ def knn_classification(X_train, y_train, k, b):
         recall.append(round(recall_score( y_val, knn.predict(X_val), average='macro'), 3))
         f1.append(round(f1_score( y_val, knn.predict(X_val), average='macro'), 3))
         fbeta.append(round(fbeta_score( y_val, knn.predict(X_val), beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
-        auc.append(round(roc_auc_score( y_val, knn.predict(X_val), average='macro'), 3))
+        
+        y_val_enc = pd.get_dummies(y_val)
+        preds_enc = pd.get_dummies(knn.predict(X_val))
+        auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro', multi_class='ovr'), 3))
 
     print(f'KNN Classification with k = {k}:\n'
           f'Precision score: {np.mean(precision)},\n'
