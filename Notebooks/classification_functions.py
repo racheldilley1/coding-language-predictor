@@ -42,13 +42,6 @@ def multinomial_nb(X_train, y_train, b):
 
     print(f'Multinomial NB:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-        #   f'Accuracy: {np.mean(ac)},\n'
-        #   f'Precision score: {np.mean(precision)},\n'
-        #   f'Recall score: {np.mean(recall)},\n'
-        #   f'f1 score: {np.mean(f1)},\n'
-        #   f'fbeta score for beta = {b}: {np.mean(fbeta)},\n'
-        #   f'ROC AUC score: {np.mean(auc)},\n'
-        #   f'Log-loss: {np.mean(logl)},\n')
     plot_roc(y_val, preds)
           
     return mnb
@@ -80,13 +73,6 @@ def random_forest(X_train, y_train, estimators, b):
 
     print(f'Random Forest with {estimators} estimators:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-        #   f'Accuracy: {np.mean(ac)},\n'
-        #   f'Precision score: {np.mean(precision)},\n'
-        #   f'Recall score: {np.mean(recall)},\n'
-        #   f'f1 score: {np.mean(f1)},\n'
-        #   f'fbeta score for beta = {b}: {np.mean(fbeta)},\n'
-        #   f'ROC AUC score: {np.mean(auc)},\n'
-        #   f'Log-loss: {np.mean(logl)},\n')
     plot_roc(y_val, preds)
           
     return rf
@@ -118,13 +104,6 @@ def decision_tree(X_train, y_train, depth, b):
 
     print(f'Decision Tree with max depth of {depth}:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-        #   f'Accuracy: {np.mean(ac)},\n'
-        #   f'Precision score: {np.mean(precision)},\n'
-        #   f'Recall score: {np.mean(recall)},\n'
-        #   f'f1 score: {np.mean(f1)},\n'
-        #   f'fbeta score for beta = {b}: {np.mean(fbeta)},\n'
-        #   f'ROC AUC score: {np.mean(auc)},\n'
-        #   f'Log-loss: {np.mean(logl)},\n')
     plot_roc(y_val, preds)
           
     return dt
@@ -160,13 +139,6 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b
 
     print(f'logistic regression with C = {regularization}:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-        #   f'Accuracy: {np.mean(ac)},\n'
-        #   f'Precision score: {np.mean(precision)},\n'
-        #   f'Recall score: {np.mean(recall)},\n'
-        #   f'f1 score: {np.mean(f1)},\n'
-        #   f'fbeta score for beta = {b}: {np.mean(fbeta)},\n'
-        #   f'ROC AUC score: {np.mean(auc)},\n'
-        #   f'Log-loss: {np.mean(logl)},\n')
     plot_roc(y_val, preds)
           
     return lm
@@ -197,13 +169,6 @@ def knn_classification(X_train, y_train, k, b):
 
     print(f'KNN Classification with k = {k}:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-        #   f'Accuracy: {np.mean(ac)},\n'
-        #   f'Precision score: {np.mean(precision)},\n'
-        #   f'Recall score: {np.mean(recall)},\n'
-        #   f'f1 score: {np.mean(f1)},\n'
-        #   f'fbeta score for beta = {b}: {np.mean(fbeta)},\n'
-        #   f'ROC AUC score: {np.mean(auc)},\n'
-        #   f'Log-loss: {np.mean(logl)},\n')
     plot_roc(y_val, knn.predict(X_val))
     
     return knn
@@ -245,8 +210,9 @@ def plot_roc(y_test, preds):
     # Plot of a ROC curve for a specific class
     for i in range(3):
         plt.figure()
-        plt.plot(fpr[i], tpr[i], label='ROC curve (area = %0.2f)' % roc_auc[i])
-        plt.plot([0, 1], [0, 1], 'k--')
+        plt.plot(fpr[i], tpr[i], label='ROC curve (area = %0.2f)' % roc_auc[i], lw=2)
+        #plt.plot([0, 1], [0, 1], 'k--')
+        plt.plot([0,1],[0,1],c='violet',ls='--')
         plt.xlim([0.0, 1.0])
         plt.ylim([0.0, 1.05])
         plt.xlabel('False Positive Rate')
@@ -258,10 +224,6 @@ def plot_roc(y_test, preds):
 
     # plt.plot(fpr, tpr,lw=2)
     # plt.plot([0,1],[0,1],c='violet',ls='--')
-    # plt.xlim([-0.05,1.05])
-    # plt.ylim([-0.05,1.05])
 
-    # plt.xlabel('False positive rate')
-    # plt.ylabel('True positive rate')
-    # plt.title('ROC curve for fraud problem')
+
     
