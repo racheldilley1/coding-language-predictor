@@ -30,7 +30,6 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b
         else:
             preds = lm.predict(X_val)
     
-        logl.append(round(log_loss( y_val, preds), 3))
         precision.append(round(precision_score( y_val, preds, average='macro'), 3))
         recall.append(round(recall_score( y_val, preds, average='macro'), 3))
         f1.append(round(f1_score( y_val, preds, average='macro'), 3))
@@ -39,6 +38,7 @@ def logistic_model(X_train, y_train, regularization, threshold, threshold_val, b
         y_val_enc = pd.get_dummies(y_val)
         preds_enc = pd.get_dummies(preds)
         auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro', multi_class='ovr'), 3))
+        logl.append(round(log_loss( y_val_enc, preds_enc), 3))
 
     print(f'logistic regression with C = {regularization}:\n'
           f'Precision score: {np.mean(precision)},\n'
@@ -68,11 +68,11 @@ def knn_classification(X_train, y_train, k, b):
         recall.append(round(recall_score( y_val, knn.predict(X_val), average='macro'), 3))
         f1.append(round(f1_score( y_val, knn.predict(X_val), average='macro'), 3))
         fbeta.append(round(fbeta_score( y_val, knn.predict(X_val), beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
-        logl.append(round(log_loss( y_val, knn.predict(X_val)), 3))
-
+        
         y_val_enc = pd.get_dummies(y_val)
         preds_enc = pd.get_dummies(knn.predict(X_val))
         auc.append(round(roc_auc_score( y_val_enc, preds_enc, average='macro', multi_class='ovr'), 3))
+        logl.append(round(log_loss( y_val_enc, preds_enc), 3))
 
     print(f'KNN Classification with k = {k}:\n'
           f'Precision score: {np.mean(precision)},\n'
