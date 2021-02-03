@@ -205,11 +205,13 @@ def plot_roc(y_test, X_test, model):
     tpr = dict()
     roc_auc = dict()
 
+    # y_test_enc = pd.get_dummies(y_test)
+    # preds_enc = pd.get_dummies(model.predict_proba(X_test))
     y_test_enc = pd.get_dummies(y_test)
-    preds_enc = pd.get_dummies(model.predict_proba(X_test))
+    probs = model.predict_proba(X_test)
 
     for i in range(3):
-        fpr[i], tpr[i], _ = roc_curve(y_test_enc.iloc[:, i], preds_enc.iloc[:, i])
+        fpr[i], tpr[i], _ = roc_curve(y_test_enc.iloc[:, i], probs.iloc[:, i])
         roc_auc[i] = auc(fpr[i], tpr[i])
 
     # fpr['macro'] = fpr
