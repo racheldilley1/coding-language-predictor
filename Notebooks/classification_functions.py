@@ -27,19 +27,16 @@ def multinomial_nb(X_train, y_train, b):
 
         mnb = MultinomialNB()
         mnb.fit(X_train, y_train)
-        preds = mnb.predict(X_val)
 
-        ac.append(round(mnb.score( X_val, y_val), 3))
-        precision.append(round(precision_score( y_val, preds, average='macro'), 3))
-        recall.append(round(recall_score( y_val, preds, average='macro'), 3))
-        f1.append(round(f1_score( y_val, preds, average='macro'), 3))
-        fbeta.append(round(fbeta_score( y_val, preds, beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
-        
-        y_val_enc = pd.get_dummies(y_val)
-        #preds_enc = pd.get_dummies(preds)
-        probs = mnb.predict_proba(X_val)
-        auc.append(round(roc_auc_score( y_val_enc, probs, average='macro', multi_class='ovr'), 3))
-        logl.append(round(log_loss( y_val, probs), 3))
+        metrics = calc_scores(mnb, X_val, y_val, b)
+
+        ac.append(metrics[0])
+        precision.append(metrics[1])
+        recall.append(metrics[2])
+        f1.append(metrics[3])
+        fbeta.append(metrics[4]) 
+        auc.append(metrics[5])
+        logl.append(metrics[6])
 
     print(f'Multinomial NB:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
@@ -178,6 +175,21 @@ def knn_classification(X_train, y_train, k, b):
     plot_roc(y_val, X_val, knn)
     
     return knn
+
+def calc_scores(model, X_val, y_val, b):
+    preds = model.predict(X_val)
+    y_val_enc = pd.get_dummies(y_val)
+    probs = model.predict_proba(X_val)
+    
+    ac = round(model.score( X_val, y_val), 3)
+    precision = (round(precision_score( y_val, preds, average='macro'), 3))
+    recall = (round(recall_score( y_val, preds, average='macro'), 3))
+    f1 = (round(f1_score( y_val, preds, average='macro'), 3))
+    fbeta = (round(fbeta_score( y_val, preds, beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
+    auc = (round(roc_auc_score( y_val_enc, probs, average='macro', multi_class='ovr'), 3))
+    logl = (round(log_loss( y_val, probs), 3))
+
+    return [ac, precision, recall, f1, fbeta, auc, logl]
 
 def get_scores(ac, precision, recall, f1, fbeta, b, auc, logl):
     print(f'Accuracy: {np.mean(ac)},\n'
