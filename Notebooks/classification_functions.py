@@ -22,15 +22,21 @@ def x_GBoost(X_train, y_train):
                       
     rand_param = {
                     'n_estimators': [30000], 
-                    'max_depth': [3,4,5,6,7,8],
+                    'max_depth': [3,7],
                     'objective': ["reg:squarederror"],
-                    'learning_rate': [0.05, .1, .2, .5], 
-                    'subsample': [0.5, 0.8, 1, 1.2],
-                    'min_child_weight': [1, 4, 8, 10],
-                    'colsample_bytree': [0.5, 0.8, 1, 1.2]
+                    'learning_rate': [0.05, .2], 
+                    'subsample': [0.5, 0.8],
+                    'min_child_weight': [1, 8],
+                    'colsample_bytree': [0.5, 0.8]
                  }
-    rs = RandomizedSearchCV(gbm, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
-    rs.fit(X_train, y_train)
+    rs = RandomizedSearchCV(gbm, param_distributions= rand_param, cv=5, n_iter=5, n_jobs=-1)
+
+    # eval_set = [(X_train, y_train),(X_val, y_val)]  #tracking train/validation error as we go
+    # rs.fit(X_train, y_train,
+    #         eval_set=eval_set,
+    #         eval_metric='rmse',
+    #         early_stopping_rounds=20,
+    #         verbose=True) #gives output log as below
 
     metrics = calc_cv_scores(rs, X_train, y_train)
 
@@ -130,34 +136,8 @@ def decision_tree(X_train, y_train):
           
     return rs
     
-    #this helps with the way kf will generate indices below
-    # X, y = np.array(X_train), np.array(y_train)
-    # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    # precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
 
-    # for train_ind, val_ind in kf.split(X, y):
-    #     X_train, y_train = X[train_ind], y[train_ind]
-    #     X_val, y_val = X[val_ind], y[val_ind]
-
-    #     dt = DecisionTreeClassifier(max_depth=depth)
-    #     dt.fit(X_train, y_train)
-
-    #     metrics = calc_scores(dt, X_val, y_val)
-
-    #     ac.append(metrics[0])
-    #     precision.append(metrics[1])
-    #     recall.append(metrics[2])
-    #     f1.append(metrics[3])
-    #     auc.append(metrics[5])
-    #     logl.append(metrics[6])
-
-    # print(f'Decision Tree with max depth of {depth}:\n')
-    # get_scores(ac, precision, recall, f1, auc, logl)
-    # plot_roc(y_val, X_val, dt)
-          
-    # return 'dt'
-
-def logistic_model_scaled(X_train, y_train, regularization):
+def logistic_model_scaled(X_train, y_train):
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     lm = LogisticRegression()
@@ -185,34 +165,9 @@ def logistic_model_scaled(X_train, y_train, regularization):
     plot_roc(y_train, X_train, rs)
           
     return rs
-    #this helps with the way kf will generate indices below
-    # X, y = np.array(X_train), np.array(y_train)
-    # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    # precision, recall, f1, fbeta, auc, logl , ac = [] , [], [], [], [], [], []
-
-    # for train_ind, val_ind in kf.split(X, y):
-    #     X_train, y_train = X[train_ind], y[train_ind]
-    #     X_val, y_val = X[val_ind], y[val_ind]
-
-    #     lm = LogisticRegression(C=regularization, max_iter=10000)
-    #     lm.fit(X_train, y_train)
-
-    #     metrics = calc_scores(lm, X_val, y_val)
-
-    #     ac.append(metrics[0])
-    #     precision.append(metrics[1])
-    #     recall.append(metrics[2])
-    #     f1.append(metrics[3])
-    #     auc.append(metrics[5])
-    #     logl.append(metrics[6])
-
-    # print(f'logistic regression with C = {regularization}:\n')
-    # get_scores(ac, precision, recall, f1, auc, logl)
-    # plot_roc(y_val, X_val, lm)
-          
-    #return 'lm'
 
 def knn_classification_scaled(X_train, y_train):
+    y_train_enc = pd.get_dummies(y_train)
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     knn = KNeighborsClassifier()
@@ -222,9 +177,9 @@ def knn_classification_scaled(X_train, y_train):
                     'p': ['l1', 'l2']
                 }
     rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
-    rs.fit(X_train, y_train)
+    rs.fit(X_train, y_train_enc)
 
-    metrics = calc_cv_scores(rs, X_train_scaled, y_train)
+    metrics = calc_cv_scores(rs, X_train_scaled, y_train_enc)
 
     ac = metrics[0]
     precision = metrics[1]
@@ -239,31 +194,6 @@ def knn_classification_scaled(X_train, y_train):
     plot_roc(y_train, X_train, rs)
           
     return rs
-    #this helps with the way kf will generate indices below
-    # X, y = np.array(X_train), np.array(y_train)
-    # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    # precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
-
-    # for train_ind, val_ind in kf.split(X, y):
-    #     X_train, y_train = X[train_ind], y[train_ind]
-    #     X_val, y_val = X[val_ind], y[val_ind]
-
-    #     knn = KNeighborsClassifier(n_neighbors=k) #k nearest neighbors
-    #     knn.fit(X_train, y_train)
-
-    #     metrics = calc_cv_scores(knn, X_val, y_val)
-
-    #     ac.append(metrics[0])
-    #     precision.append(metrics[1])
-    #     recall.append(metrics[2])
-    #     f1.append(metrics[3])
-    #     auc.append(metrics[5])
-    #     logl.append(metrics[6])
-
-    # print(f'KNN Classification with k = {k}:\n')
-    # get_scores(ac, precision, recall, f1, auc, logl)
-    # plot_roc(y_val, X_val, knn)
-    #return 'knn'
 
 def calc_scores(model, X_val, y_val):
 
@@ -296,7 +226,7 @@ def get_scores(ac, precision, recall, f1, auc, logl):
           f'Recall score: {recall},\n'
           f'f1 score: {f1},\n'
           f'ROC AUC score: {auc},\n'
-          f'Log-loss: {logl},\n')
+          f'Negative Log-loss: {logl},\n')
 
 def conf_matrix(y_test, preds):
 
@@ -340,6 +270,31 @@ def plot_roc(y_test, X_test, model):
     plt.legend(loc="lower right")
     plt.show()
 
+ #this helps with the way kf will generate indices below
+    # X, y = np.array(X_train), np.array(y_train)
+    # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
+    # precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
+
+    # for train_ind, val_ind in kf.split(X, y):
+    #     X_train, y_train = X[train_ind], y[train_ind]
+    #     X_val, y_val = X[val_ind], y[val_ind]
+
+    #     knn = KNeighborsClassifier(n_neighbors=k) #k nearest neighbors
+    #     knn.fit(X_train, y_train)
+
+    #     metrics = calc_cv_scores(knn, X_val, y_val)
+
+    #     ac.append(metrics[0])
+    #     precision.append(metrics[1])
+    #     recall.append(metrics[2])
+    #     f1.append(metrics[3])
+    #     auc.append(metrics[5])
+    #     logl.append(metrics[6])
+
+    # print(f'KNN Classification with k = {k}:\n')
+    # get_scores(ac, precision, recall, f1, auc, logl)
+    # plot_roc(y_val, X_val, knn)
+    #return 'knn
 
 
 
