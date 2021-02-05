@@ -15,46 +15,40 @@ from sklearn.naive_bayes import BernoulliNB, MultinomialNB, GaussianNB
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def multinomial_nb(X_train, y_train):
-    nb = MultinomialNB()
-    # gs = GridSearchCV(nb, cv=skf, param_grid=params, return_train_score=True)
-    # #this helps with the way kf will generate indices below
-    # X, y = np.array(X_train), np.array(y_train)
-    # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    # precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
+# def multinomial_nb(X_train, y_train):
+    
+#     params = {
+#                 'alpha': range(10)
+#             }
+#     nb = MultinomialNB()
+#     rs = RandomizedSearchCV(nb, param_grid=params, cv=5, n_iter=30, n_jobs=-1)
+#     rs.fit(X_train, y_train)
 
-    # for train_ind, val_ind in kf.split(X, y):
-    #     X_train, y_train = X[train_ind], y[train_ind]
-    #     X_val, y_val = X[val_ind], y[val_ind]
+#     metrics = calc_cv_scores(rs, X_val, y_val)
 
-    #     mnb = MultinomialNB()
-    #     mnb.fit(X_train, y_train)
+#     ac.append(metrics[0])
+#     precision.append(metrics[1])
+#     recall.append(metrics[2])
+#     f1.append(metrics[3])
+#     auc.append(metrics[5])
+#     logl.append(metrics[6])
 
-    #     metrics = calc_cv_scores(mnb, X_val, y_val)
-
-    #     ac.append(metrics[0])
-    #     precision.append(metrics[1])
-    #     recall.append(metrics[2])
-    #     f1.append(metrics[3])
-    #     auc.append(metrics[5])
-    #     logl.append(metrics[6])
-
-    # print(f'Multinomial NB:\n')
-    # get_scores(ac, precision, recall, f1, auc, logl)
-    # plot_roc(y_val, X_val, mnb)
+#     print(f'Multinomial NB:\n')
+#     get_scores(ac, precision, recall, f1, auc, logl)
+#     plot_roc(y_val, X_val, rs)
           
-    return 'mnb'
+#     return 'mnb'
 
 def random_forest(X_train, y_train):
 
     rf = RandomForestClassifier()
-    grid_param = {
-                    'n_estimators': [100, 300, 500, 800, 1000],
+    rand_param = {
+                    'n_estimators': [100, 300, 500, 800],
                     'criterion': ['gini', 'entropy'],
                     'max_features': ['auto', 'sqrt', 'log2'],
                     'max_depth' : [4,5,6,7,8]
                 }
-    rs = RandomizedSearchCV(rf, param_distributions= grid_param, cv=5, n_iter=50, n_jobs=-1)
+    rs = RandomizedSearchCV(rf, param_distributions= rand_param, cv=5, n_iter=5, n_jobs=-1)
     rs.fit(X_train, y_train)
 
     metrics = calc_cv_scores(rs, X_train, y_train)
@@ -73,7 +67,13 @@ def random_forest(X_train, y_train):
           
     return rs
 
-def decision_tree(X_train, y_train, depth):
+def decision_tree(X_train, y_train):
+    dt = DecisionTreeClassifier()
+    rand_params = {
+                    'max_depth': [2,4,6,8,10,12],
+                    'criterion': ['gini', 'entropy'],
+                    'max_features': ['auto', 'sqrt', 'log2'],
+                }
     #this helps with the way kf will generate indices below
     # X, y = np.array(X_train), np.array(y_train)
     # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
@@ -101,7 +101,16 @@ def decision_tree(X_train, y_train, depth):
           
     return 'dt'
 
-def logistic_model(X_train, y_train, regularization):
+def logistic_model_scaled(X_train, y_train, regularization):
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    lm = LogisticRegression()
+
+    rand_params = {
+                    'max_iter': [10000],
+                    'C': [0.1, 1, 10, 50, 100],
+                    'penalty': ['l1', 'l2']
+                }
     #this helps with the way kf will generate indices below
     # X, y = np.array(X_train), np.array(y_train)
     # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
@@ -129,7 +138,15 @@ def logistic_model(X_train, y_train, regularization):
           
     return 'lm'
 
-def knn_classification(X_train, y_train, k):
+def knn_classification_scaled(X_train, y_train):
+    scaler = StandardScaler()
+    X_train_scaled = scaler.fit_transform(X_train)
+    knn = KNeighborsClassifier()
+
+    rand_param = {
+                    'n_neighbors': [3, 4, 5, 6,7 ,8 ,9 ],
+                    'p': ['l1', 'l2']
+                }
     #this helps with the way kf will generate indices below
     # X, y = np.array(X_train), np.array(y_train)
     # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
@@ -182,12 +199,12 @@ def calc_cv_scores(model, X_test, y_test):
     return [ac, precision, recall, f1, auc, logl]
 
 def get_scores(ac, precision, recall, f1, auc, logl):
-    print(f'Accuracy: {np.mean(ac)},\n'
-          f'Precision score: {np.mean(precision)},\n'
-          f'Recall score: {np.mean(recall)},\n'
-          f'f1 score: {np.mean(f1)},\n'
-          f'ROC AUC score: {np.mean(auc)},\n'
-          f'Log-loss: {np.mean(logl)},\n')
+    print(f'Accuracy: {ac},\n'
+          f'Precision score: {precision},\n'
+          f'Recall score: {recall},\n'
+          f'f1 score: {f1},\n'
+          f'ROC AUC score: {auc},\n'
+          f'Log-loss: {logl},\n')
 
 def conf_matrix(y_test, preds):
 
