@@ -173,8 +173,8 @@ def knn_classification_scaled(X_train, y_train):
     knn = KNeighborsClassifier()
 
     rand_param = {
-                    'n_neighbors': [3, 4, 5, 6,7 ,8 ,9 ],
-                    'p': ['l1', 'l2']
+                    'n_neighbors': [3, 4, 5, 6,7 ,8 ,9 ]
+                    
                 }
     rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
     rs.fit(X_train, y_train_enc)
