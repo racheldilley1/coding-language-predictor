@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 #modeling
-from sklearn.model_selection import train_test_split, KFold
+from sklearn.model_selection import train_test_split, KFold, GridSearchCV
 from sklearn.metrics import roc_auc_score, confusion_matrix, roc_curve, precision_score, recall_score, f1_score, fbeta_score, auc, log_loss
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.linear_model import LogisticRegression
@@ -16,62 +16,74 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 def multinomial_nb(X_train, y_train, b):
-    #this helps with the way kf will generate indices below
-    X, y = np.array(X_train), np.array(y_train)
-    kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
+    # nb = MultinomialNB()
+    # gs = GridSearchCV(nb, cv=skf, param_grid=params, return_train_score=True)
+    # #this helps with the way kf will generate indices below
+    # X, y = np.array(X_train), np.array(y_train)
+    # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
+    # precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
 
-    for train_ind, val_ind in kf.split(X, y):
-        X_train, y_train = X[train_ind], y[train_ind]
-        X_val, y_val = X[val_ind], y[val_ind]
+    # for train_ind, val_ind in kf.split(X, y):
+    #     X_train, y_train = X[train_ind], y[train_ind]
+    #     X_val, y_val = X[val_ind], y[val_ind]
 
-        mnb = MultinomialNB()
-        mnb.fit(X_train, y_train)
+    #     mnb = MultinomialNB()
+    #     mnb.fit(X_train, y_train)
 
-        metrics = calc_scores(mnb, X_val, y_val, b)
+    #     metrics = calc_scores(mnb, X_val, y_val, b)
 
-        ac.append(metrics[0])
-        precision.append(metrics[1])
-        recall.append(metrics[2])
-        f1.append(metrics[3])
-        fbeta.append(metrics[4]) 
-        auc.append(metrics[5])
-        logl.append(metrics[6])
+    #     ac.append(metrics[0])
+    #     precision.append(metrics[1])
+    #     recall.append(metrics[2])
+    #     f1.append(metrics[3])
+    #     fbeta.append(metrics[4]) 
+    #     auc.append(metrics[5])
+    #     logl.append(metrics[6])
 
-    print(f'Multinomial NB:\n')
-    get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-    plot_roc(y_val, X_val, mnb)
+    # print(f'Multinomial NB:\n')
+    # get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
+    # plot_roc(y_val, X_val, mnb)
           
-    return mnb
+    return 'mnb'
 
 def random_forest(X_train, y_train, estimators, b):
-    #this helps with the way kf will generate indices below
-    X, y = np.array(X_train), np.array(y_train)
-    kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
 
-    for train_ind, val_ind in kf.split(X, y):
-        X_train, y_train = X[train_ind], y[train_ind]
-        X_val, y_val = X[val_ind], y[val_ind]
+    rf = RandomForestClassifier()
+    grid_param = {
+                    'n_estimators': [100, 300, 500, 800, 1000],
+                    'criterion': ['gini', 'entropy'],
+                    'max_features': ['auto', 'sqrt', 'log2'],
+                    'max_depth' : [4,5,6,7,8]
+                }
+    gs = GridSearchCV(rf, param_grid= grid_param, cv=5)
+    gs.fit(X_train, y_train)
+    # #this helps with the way kf will generate indices below
+    # X, y = np.array(X_train), np.array(y_train)
+    # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
+    # precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
 
-        rf = RandomForestClassifier(n_estimators=estimators)
-        rf.fit(X_train, y_train)
+    # for train_ind, val_ind in kf.split(X, y):
+    #     X_train, y_train = X[train_ind], y[train_ind]
+    #     X_val, y_val = X[val_ind], y[val_ind]
 
-        metrics = calc_scores(rf, X_val, y_val, b)
+    #     rf = RandomForestClassifier(n_estimators=estimators)
+    #     rf.fit(X_train, y_train)
 
-        ac.append(metrics[0])
-        precision.append(metrics[1])
-        recall.append(metrics[2])
-        f1.append(metrics[3])
-        fbeta.append(metrics[4]) 
-        auc.append(metrics[5])
-        logl.append(metrics[6])
+    metrics = calc_scores(gs, X_train, y_train, b)
+
+    ac = metrics[0]
+    precision = metrics[1]
+    recall = metrics[2] 
+    f1 = metrics[3]
+    fbeta = metrics[4]
+    auc = metrics[5]
+    logl = metrics[6]
 
     print(f'Random Forest with {estimators} estimators:\n')
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-    plot_roc(y_val, X_val, rf)
+    plot_roc(y_train, X_train, gs)
           
-    return rf
+    return gs
 
 def decision_tree(X_train, y_train, depth, b):
     #this helps with the way kf will generate indices below
@@ -160,12 +172,28 @@ def knn_classification(X_train, y_train, k, b):
     
     return knn
 
-def calc_scores(model, X_val, y_val, b):
+def calc_cv_scores(model, X_val, y_val, b):
+
     preds = model.predict(X_val)
     y_val_enc = pd.get_dummies(y_val)
     probs = model.predict_proba(X_val)
     
     ac = round(model.score( X_val, y_val), 3)
+    precision = (round(precision_score( y_val, preds, average='macro'), 3))
+    recall = (round(recall_score( y_val, preds, average='macro'), 3))
+    f1 = (round(f1_score( y_val, preds, average='macro'), 3))
+    fbeta = (round(fbeta_score( y_val, preds, beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
+    auc = (round(roc_auc_score( y_val_enc, probs, average='macro', multi_class='ovr'), 3))
+    logl = (round(log_loss( y_val, probs), 3))
+
+    return [ac, precision, recall, f1, fbeta, auc, logl]
+
+def calc_scores(model, X_test, y_val, b):
+    preds = model.predict(X_test)
+    y_val_enc = pd.get_dummies(y_val)
+    probs = model.predict_proba(X_test)
+    
+    ac = round(model.score( X_test, y_val), 3)
     precision = (round(precision_score( y_val, preds, average='macro'), 3))
     recall = (round(recall_score( y_val, preds, average='macro'), 3))
     f1 = (round(f1_score( y_val, preds, average='macro'), 3))
