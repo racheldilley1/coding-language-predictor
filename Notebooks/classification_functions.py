@@ -173,14 +173,19 @@ def knn_classification_scaled(X_train, y_train):
     knn = KNeighborsClassifier()
 
     rand_param = {
-                    'n_neighbors': [3, 4, 5, 6,7 ,8 ,9 ]
-                    
+                    'n_neighbors': [3, 4, 5, 6,7 ,8 ,9 ]   
                 }
     rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
     rs.fit(X_train, y_train_enc)
 
-    metrics = calc_cv_scores(rs, X_train_scaled, y_train_enc)
-
+    nsamples, nx, ny = X_train.shape
+    d2_train_dataset = train_dataset.reshape((nsamples,nx*ny))
+    #try:
+    metrics = calc_cv_scores(rs, X_train_scaled, y_train)
+    # except:
+    #     nsamples, nx, ny = X_train_scaled.shape
+    #     X2_train_scaled = X_train_scaled.reshape((nsamples,nx*ny))
+    #     metrics = calc_cv_scores(rs, X_train_scaled, y_train_enc)
     ac = metrics[0]
     precision = metrics[1]
     recall = metrics[2] 
