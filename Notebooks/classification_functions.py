@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 #modeling
-from sklearn.model_selection import train_test_split, KFold, GridSearchCV
+from sklearn.model_selection import train_test_split, KFold, GridSearchCV, RandomizedSearchCV, cross_val_score
 from sklearn.metrics import roc_auc_score, confusion_matrix, roc_curve, precision_score, recall_score, f1_score, fbeta_score, auc, log_loss
 from sklearn.preprocessing import StandardScaler, LabelEncoder
 from sklearn.linear_model import LogisticRegression
@@ -46,7 +46,7 @@ def multinomial_nb(X_train, y_train, b):
           
     return 'mnb'
 
-def random_forest(X_train, y_train, estimators, b):
+def random_forest(X_train, y_train,  b):
 
     rf = RandomForestClassifier()
     grid_param = {
@@ -55,21 +55,10 @@ def random_forest(X_train, y_train, estimators, b):
                     'max_features': ['auto', 'sqrt', 'log2'],
                     'max_depth' : [4,5,6,7,8]
                 }
-    gs = GridSearchCV(rf, param_grid= grid_param, cv=5)
-    gs.fit(X_train, y_train)
-    # #this helps with the way kf will generate indices below
-    # X, y = np.array(X_train), np.array(y_train)
-    # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    # precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
+    rs = RandomizedSearchCV(rf, param_distributions= grid_param, cv=5, n_iter=50)
+    rs.fit(X_train, y_train)
 
-    # for train_ind, val_ind in kf.split(X, y):
-    #     X_train, y_train = X[train_ind], y[train_ind]
-    #     X_val, y_val = X[val_ind], y[val_ind]
-
-    #     rf = RandomForestClassifier(n_estimators=estimators)
-    #     rf.fit(X_train, y_train)
-
-    metrics = calc_scores(gs, X_train, y_train, b)
+    metrics = calc_cv_scores(rs, X_train, y_train)
 
     ac = metrics[0]
     precision = metrics[1]
@@ -79,11 +68,12 @@ def random_forest(X_train, y_train, estimators, b):
     auc = metrics[5]
     logl = metrics[6]
 
-    print(f'Random Forest with {estimators} estimators:\n')
+    print(f'Random Forest with params:\n')
+    print(rs.best_params_)
     get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-    plot_roc(y_train, X_train, gs)
+    plot_roc(y_train, X_train, rs)
           
-    return gs
+    return rs
 
 def decision_tree(X_train, y_train, depth, b):
     #this helps with the way kf will generate indices below
@@ -172,7 +162,7 @@ def knn_classification(X_train, y_train, k, b):
     
     return knn
 
-def calc_cv_scores(model, X_val, y_val, b):
+def calc_scores(model, X_val, y_val, b):
 
     preds = model.predict(X_val)
     y_val_enc = pd.get_dummies(y_val)
@@ -188,18 +178,16 @@ def calc_cv_scores(model, X_val, y_val, b):
 
     return [ac, precision, recall, f1, fbeta, auc, logl]
 
-def calc_scores(model, X_test, y_val, b):
-    preds = model.predict(X_test)
-    y_val_enc = pd.get_dummies(y_val)
-    probs = model.predict_proba(X_test)
+def calc_cv_scores(model, X_test, y_test):
+    ac = round(cross_val_score(model, X_test, y_test, scoring='acuracy', cv=5).mean(), 3)
+    precision = round(cross_val_score(model, X_test, y_test, scoring='precision_macro', cv=5).mean(), 3)
+    recall = round(cross_val_score(model, X_test, y_test, scoring='recall_macro', cv=5).mean(), 3)
+    f1 = round(cross_val_score(model, X_test, y_test, scoring='f1_macro', cv=5).mean(), 3)
+    auc = round(cross_val_score(model, X_test, y_test, scoring='roc_auc_ovr', cv=5).mean(), 3)
     
-    ac = round(model.score( X_test, y_val), 3)
-    precision = (round(precision_score( y_val, preds, average='macro'), 3))
-    recall = (round(recall_score( y_val, preds, average='macro'), 3))
-    f1 = (round(f1_score( y_val, preds, average='macro'), 3))
-    fbeta = (round(fbeta_score( y_val, preds, beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
-    auc = (round(roc_auc_score( y_val_enc, probs, average='macro', multi_class='ovr'), 3))
-    logl = (round(log_loss( y_val, probs), 3))
+    fbeta = 0
+    
+    logl = 0
 
     return [ac, precision, recall, f1, fbeta, auc, logl]
 
