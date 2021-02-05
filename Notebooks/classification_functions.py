@@ -15,8 +15,8 @@ from sklearn.naive_bayes import BernoulliNB, MultinomialNB, GaussianNB
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def multinomial_nb(X_train, y_train, b):
-    # nb = MultinomialNB()
+def multinomial_nb(X_train, y_train):
+    nb = MultinomialNB()
     # gs = GridSearchCV(nb, cv=skf, param_grid=params, return_train_score=True)
     # #this helps with the way kf will generate indices below
     # X, y = np.array(X_train), np.array(y_train)
@@ -30,18 +30,17 @@ def multinomial_nb(X_train, y_train, b):
     #     mnb = MultinomialNB()
     #     mnb.fit(X_train, y_train)
 
-    #     metrics = calc_scores(mnb, X_val, y_val, b)
+    #     metrics = calc_cv_scores(mnb, X_val, y_val)
 
     #     ac.append(metrics[0])
     #     precision.append(metrics[1])
     #     recall.append(metrics[2])
     #     f1.append(metrics[3])
-    #     fbeta.append(metrics[4]) 
     #     auc.append(metrics[5])
     #     logl.append(metrics[6])
 
     # print(f'Multinomial NB:\n')
-    # get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
+    # get_scores(ac, precision, recall, f1, auc, logl)
     # plot_roc(y_val, X_val, mnb)
           
     return 'mnb'
@@ -74,7 +73,7 @@ def random_forest(X_train, y_train):
           
     return rs
 
-def decision_tree(X_train, y_train, depth, b):
+def decision_tree(X_train, y_train, depth):
     #this helps with the way kf will generate indices below
     # X, y = np.array(X_train), np.array(y_train)
     # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
@@ -97,12 +96,12 @@ def decision_tree(X_train, y_train, depth, b):
     #     logl.append(metrics[6])
 
     # print(f'Decision Tree with max depth of {depth}:\n')
-    # get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
+    # get_scores(ac, precision, recall, f1, auc, logl)
     # plot_roc(y_val, X_val, dt)
           
     return 'dt'
 
-def logistic_model(X_train, y_train, regularization, b):
+def logistic_model(X_train, y_train, regularization):
     #this helps with the way kf will generate indices below
     # X, y = np.array(X_train), np.array(y_train)
     # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
@@ -115,23 +114,22 @@ def logistic_model(X_train, y_train, regularization, b):
     #     lm = LogisticRegression(C=regularization, max_iter=10000)
     #     lm.fit(X_train, y_train)
 
-    #     metrics = calc_scores(lm, X_val, y_val, b)
+    #     metrics = calc_scores(lm, X_val, y_val)
 
     #     ac.append(metrics[0])
     #     precision.append(metrics[1])
     #     recall.append(metrics[2])
     #     f1.append(metrics[3])
-    #     fbeta.append(metrics[4]) 
     #     auc.append(metrics[5])
     #     logl.append(metrics[6])
 
     # print(f'logistic regression with C = {regularization}:\n')
-    # get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
+    # get_scores(ac, precision, recall, f1, auc, logl)
     # plot_roc(y_val, X_val, lm)
           
     return 'lm'
 
-def knn_classification(X_train, y_train, k, b):
+def knn_classification(X_train, y_train, k):
     #this helps with the way kf will generate indices below
     # X, y = np.array(X_train), np.array(y_train)
     # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
@@ -144,20 +142,18 @@ def knn_classification(X_train, y_train, k, b):
     #     knn = KNeighborsClassifier(n_neighbors=k) #k nearest neighbors
     #     knn.fit(X_train, y_train)
 
-    #     metrics = calc_scores(knn, X_val, y_val, b)
+    #     metrics = calc_cv_scores(knn, X_val, y_val)
 
     #     ac.append(metrics[0])
     #     precision.append(metrics[1])
     #     recall.append(metrics[2])
     #     f1.append(metrics[3])
-    #     fbeta.append(metrics[4]) 
     #     auc.append(metrics[5])
     #     logl.append(metrics[6])
 
     # print(f'KNN Classification with k = {k}:\n')
-    # get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
+    # get_scores(ac, precision, recall, f1, auc, logl)
     # plot_roc(y_val, X_val, knn)
-    
     return 'knn'
 
 def calc_scores(model, X_val, y_val):
@@ -176,7 +172,7 @@ def calc_scores(model, X_val, y_val):
     return [ac, precision, recall, f1, auc, logl]
 
 def calc_cv_scores(model, X_test, y_test):
-    ac = round(cross_val_score(model, X_test, y_test, scoring='acuracy', cv=5).mean(), 3)
+    ac = round(cross_val_score(model, X_test, y_test, scoring='accuracy', cv=5).mean(), 3)
     precision = round(cross_val_score(model, X_test, y_test, scoring='precision_macro', cv=5).mean(), 3)
     recall = round(cross_val_score(model, X_test, y_test, scoring='recall_macro', cv=5).mean(), 3)
     f1 = round(cross_val_score(model, X_test, y_test, scoring='f1_macro', cv=5).mean(), 3)
@@ -211,8 +207,6 @@ def plot_roc(y_test, X_test, model):
     tpr = dict()
     roc_auc = dict()
 
-    # y_test_enc = pd.get_dummies(y_test)
-    # preds_enc = pd.get_dummies(model.predict_proba(X_test))
     y_test_enc = pd.get_dummies(y_test)
     probs = model.predict_proba(X_test)
 
@@ -220,20 +214,7 @@ def plot_roc(y_test, X_test, model):
         fpr[i], tpr[i], _ = roc_curve(y_test_enc.iloc[:, i], probs[:, i])
         roc_auc[i] = auc(fpr[i], tpr[i])
 
-    # fpr['macro'] = fpr
-    # tpr['macro'] = tpr
-    # roc_auc = auc(fpr['macro'], tpr['macro'])
-
     plt.figure()
-    # plt.plot(fpr["micro"], tpr["micro"],
-    #         label='micro-average ROC curve (area = {0:0.2f})'
-    #             ''.format(roc_auc["micro"]),
-    #         color='deeppink', linestyle=':', linewidth=4)
-
-    # plt.plot(fpr["macro"], tpr["macro"],
-    #         label='macro-average ROC curve (area = {0:0.2f})'
-    #             ''.format(roc_auc["macro"]),
-    #         color='navy', linestyle=':', linewidth=4)
     op_sys = y_test_enc.columns
     colors = ['aqua', 'darkorange', 'cornflowerblue']
     for i, color, os in zip(range(3), colors, op_sys):
