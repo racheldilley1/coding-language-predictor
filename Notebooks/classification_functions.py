@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from statistics import mean
 
 #modeling
 from sklearn.model_selection import train_test_split, KFold, GridSearchCV, RandomizedSearchCV, cross_val_score
@@ -17,42 +18,67 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 def x_GBoost(X_train, y_train):
+              
+    # rand_param = {
+    #                 'n_estimators': [30000], 
+    #                 'max_depth': [3,7],
+    #                 'objective': ["reg:squarederror"],
+    #                 'learning_rate': [0.05, .2], 
+    #                 'subsample': [0.5, 0.8],
+    #                 'min_child_weight': [1, 8],
+    #                 'colsample_bytree': [0.5, 0.8]
+    #              }
 
-    gbm = xgb.XGBClassifier()
-                      
-    rand_param = {
-                    'n_estimators': [30000], 
-                    'max_depth': [3,7],
-                    'objective': ["reg:squarederror"],
-                    'learning_rate': [0.05, .2], 
-                    'subsample': [0.5, 0.8],
-                    'min_child_weight': [1, 8],
-                    'colsample_bytree': [0.5, 0.8]
-                 }
-    rs = RandomizedSearchCV(gbm, param_distributions= rand_param, cv=5, n_iter=5, n_jobs=-1)
+    #this helps with the way kf will generate indices below
+    X, y = np.array(X_train), np.array(y_train)
+    kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
+    precision, recall, f1,  auc, logl, ac = [] , [], [], [], [], []
 
-    # eval_set = [(X_train, y_train),(X_val, y_val)]  #tracking train/validation error as we go
-    # rs.fit(X_train, y_train,
-    #         eval_set=eval_set,
-    #         eval_metric='rmse',
-    #         early_stopping_rounds=20,
-    #         verbose=True) #gives output log as below
+    for train_ind, val_ind in kf.split(X, y):
+        X_train, y_train = X[train_ind], y[train_ind]
+        X_val, y_val = X[val_ind], y[val_ind]
 
-    metrics = calc_cv_scores(rs, X_train, y_train)
+        gbm = xgb.XGBClassifier( 
+                                n_estimators=30000,
+                                max_depth=4,
+                                objective='multi:softmax',
+                                num_classes = 3,  
+                                use_label_encoder=False,
+                                learning_rate=.05, 
+                                subsample=.8,
+                                min_child_weight=3,
+                                colsample_bytree=.8)
 
-    ac = metrics[0]
-    precision = metrics[1]
-    recall = metrics[2] 
-    f1 = metrics[3]
-    auc = metrics[4]
-    logl = metrics[5]
+        eval_set=[(X_train,y_train),(X_val,y_val)]
 
-    print(f'XGBoost with params:\n')
-    print(rs.best_params_)
-    get_scores(ac, precision, recall, f1, auc, logl)
-    plot_roc(y_train, X_train, rs)
+        gbm_fit = gbm.fit(
+                        X_train, y_train, 
+                        eval_set=eval_set,
+                        eval_metric='auc', 
+                        early_stopping_rounds=50,
+                        verbose=False)
+
+        metrics = calc_scores(gbm_fit, X_val, y_val)
+
+        ac.append(metrics[0])
+        precision.append(metrics[1])
+        recall.append(metrics[2])
+        f1.append(metrics[3])
+        auc.append(metrics[4])
+        logl.append(metrics[5])
+
+    ac = mean(ac)
+    precision = mean(precision)
+    recall = mean(recall)
+    f1 = mean(f1)
+    auc = mean(auc)
+    logl = mean(logl)
+
+    print(f'XGBoost:\n')
+    get_scores(gbm_fit, precision, recall, f1, auc, logl)
+    plot_roc(y_train, X_train, gbm_fit)
           
-    return rs
+    return gbm_fit
 
 # def multinomial_nb(X_train, y_train):
     
@@ -178,13 +204,8 @@ def knn_classification_scaled(X_train, y_train):
     rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
     rs.fit(X_train_scaled, y_train)
 
-   
-    #try:
     metrics = calc_cv_scores(rs, X_train_scaled, y_train)
-    # except:
-    #     nsamples, nx, ny = X_train_scaled.shape
-    #     X2_train_scaled = X_train_scaled.reshape((nsamples,nx*ny))
-    #     metrics = calc_cv_scores(rs, X_train_scaled, y_train_enc)
+
     ac = metrics[0]
     precision = metrics[1]
     recall = metrics[2] 
