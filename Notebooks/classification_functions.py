@@ -148,7 +148,7 @@ def logistic_model_scaled(X_train, y_train):
                     'penalty': ['l1', 'l2']
                 }
     rs = RandomizedSearchCV(lm, param_distributions= rand_params, cv=5, n_iter=20, n_jobs=-1)
-    rs.fit(X_train, y_train)
+    rs.fit(X_train_scaled, y_train)
 
     metrics = calc_cv_scores(rs, X_train_scaled, y_train)
 
@@ -162,7 +162,7 @@ def logistic_model_scaled(X_train, y_train):
     print(f'Logistic Regression with params:\n')
     print(rs.best_params_)
     get_scores(ac, precision, recall, f1, auc, logl)
-    plot_roc(y_train, X_train, rs)
+    plot_roc(y_train, X_train_scaled, rs)
           
     return rs
 
@@ -176,7 +176,7 @@ def knn_classification_scaled(X_train, y_train):
                     'n_neighbors': [3, 4, 5, 6,7 ,8 ,9 ]   
                 }
     rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
-    rs.fit(X_train, y_train)
+    rs.fit(X_train_scaled, y_train)
 
    
     #try:
