@@ -178,8 +178,7 @@ def knn_classification_scaled(X_train, y_train):
     rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
     rs.fit(X_train, y_train_enc)
 
-    nsamples, nx, ny = X_train.shape
-    d2_train_dataset = train_dataset.reshape((nsamples,nx*ny))
+   
     #try:
     metrics = calc_cv_scores(rs, X_train_scaled, y_train)
     # except:
