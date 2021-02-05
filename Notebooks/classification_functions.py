@@ -43,7 +43,7 @@ def random_forest(X_train, y_train):
 
     rf = RandomForestClassifier()
     rand_param = {
-                    'n_estimators': [100, 300, 500, 800],
+                    'n_estimators': [500, 800, 1000, 1200],
                     'criterion': ['gini', 'entropy'],
                     'max_features': ['auto', 'sqrt', 'log2'],
                     'max_depth' : [4,5,6,7,8]
