@@ -29,7 +29,7 @@ def x_GBoost(X_train, y_train):
                     'min_child_weight': [1, 4, 8, 10],
                     'colsample_bytree': [0.5, 0.8, 1, 1.2]
                  }
-    rs = RandomizedSearchCV(xgb, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
+    rs = RandomizedSearchCV(gbm, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
     rs.fit(X_train, y_train)
 
     metrics = calc_cv_scores(rs, X_train, y_train)
@@ -170,7 +170,7 @@ def logistic_model_scaled(X_train, y_train, regularization):
     rs = RandomizedSearchCV(lm, param_distributions= rand_params, cv=5, n_iter=10, n_jobs=-1)
     rs.fit(X_train, y_train)
 
-    metrics = calc_cv_scores(rs, X_train, y_train)
+    metrics = calc_cv_scores(rs, X_train_scaled, y_train)
 
     ac = metrics[0]
     precision = metrics[1]
@@ -224,7 +224,7 @@ def knn_classification_scaled(X_train, y_train):
     rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=10, n_jobs=-1)
     rs.fit(X_train, y_train)
 
-    metrics = calc_cv_scores(rs, X_train, y_train)
+    metrics = calc_cv_scores(rs, X_train_scaled, y_train)
 
     ac = metrics[0]
     precision = metrics[1]
