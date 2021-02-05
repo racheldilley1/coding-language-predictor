@@ -85,7 +85,7 @@ def random_forest(X_train, y_train):
                     'n_estimators': [30000],
                     'max_depth' : [3,4,5,6,7,8]
                 }
-    rs = RandomizedSearchCV(rf, param_distributions= rand_param, cv=5, n_iter=5, n_jobs=-1)
+    rs = RandomizedSearchCV(rf, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
     rs.fit(X_train, y_train)
 
     metrics = calc_cv_scores(rs, X_train, y_train)
@@ -107,11 +107,11 @@ def random_forest(X_train, y_train):
 def decision_tree(X_train, y_train):
     dt = DecisionTreeClassifier()
     rand_params = {
-                    'max_depth': [3,4,6,8,10,12],
+                    'max_depth': [3,4,6,8,10,12, 14],
                     'criterion': ['gini', 'entropy'],
                     'max_features': ['auto', 'sqrt', 'log2'],
                 }
-    rs = RandomizedSearchCV(dt, param_distributions= rand_params, cv=5, n_iter=10, n_jobs=-1)
+    rs = RandomizedSearchCV(dt, param_distributions= rand_params, cv=5, n_iter=20, n_jobs=-1)
     rs.fit(X_train, y_train)
 
     metrics = calc_cv_scores(rs, X_train, y_train)
@@ -167,7 +167,7 @@ def logistic_model_scaled(X_train, y_train, regularization):
                     'C': [0.1, 1, 10, 50, 100],
                     'penalty': ['l1', 'l2']
                 }
-    rs = RandomizedSearchCV(lm, param_distributions= rand_params, cv=5, n_iter=10, n_jobs=-1)
+    rs = RandomizedSearchCV(lm, param_distributions= rand_params, cv=5, n_iter=20, n_jobs=-1)
     rs.fit(X_train, y_train)
 
     metrics = calc_cv_scores(rs, X_train_scaled, y_train)
@@ -221,7 +221,7 @@ def knn_classification_scaled(X_train, y_train):
                     'n_neighbors': [3, 4, 5, 6,7 ,8 ,9 ],
                     'p': ['l1', 'l2']
                 }
-    rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=10, n_jobs=-1)
+    rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
     rs.fit(X_train, y_train)
 
     metrics = calc_cv_scores(rs, X_train_scaled, y_train)
