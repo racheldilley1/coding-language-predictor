@@ -167,7 +167,7 @@ def logistic_model_scaled(X_train, y_train):
     return rs
 
 def knn_classification_scaled(X_train, y_train):
-    y_train_enc = pd.get_dummies(y_train)
+    #y_train_enc = pd.get_dummies(y_train)
     scaler = StandardScaler()
     X_train_scaled = scaler.fit_transform(X_train)
     knn = KNeighborsClassifier()
@@ -176,7 +176,7 @@ def knn_classification_scaled(X_train, y_train):
                     'n_neighbors': [3, 4, 5, 6,7 ,8 ,9 ]   
                 }
     rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
-    rs.fit(X_train, y_train_enc)
+    rs.fit(X_train, y_train)
 
    
     #try:
@@ -192,10 +192,10 @@ def knn_classification_scaled(X_train, y_train):
     auc = metrics[4]
     logl = metrics[5]
 
-    print(f'Decision Tree with params:\n')
+    print(f'KNN with params:\n')
     print(rs.best_params_)
     get_scores(ac, precision, recall, f1, auc, logl)
-    plot_roc(y_train, X_train, rs)
+    plot_roc(y_train, X_train_scaled, rs)
           
     return rs
 
