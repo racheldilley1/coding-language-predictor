@@ -42,11 +42,15 @@ import seaborn as sns
 def random_forest(X_train, y_train):
 
     rf = RandomForestClassifier()
+    # rand_param = {
+    #                 'n_estimators': [500, 800, 1000, 1200],
+    #                 'criterion': ['gini', 'entropy'],
+    #                 'max_features': ['auto', 'sqrt', 'log2'],
+    #                 'max_depth' : [2,4,5,6,7,8]
+    #             }
     rand_param = {
                     'n_estimators': [500, 800, 1000, 1200],
-                    'criterion': ['gini', 'entropy'],
-                    'max_features': ['auto', 'sqrt', 'log2'],
-                    'max_depth' : [4,5,6,7,8]
+                    'max_depth' : [2,4,5,6,7,8]
                 }
     rs = RandomizedSearchCV(rf, param_distributions= rand_param, cv=5, n_iter=5, n_jobs=-1)
     rs.fit(X_train, y_train)
@@ -74,6 +78,7 @@ def decision_tree(X_train, y_train):
                     'criterion': ['gini', 'entropy'],
                     'max_features': ['auto', 'sqrt', 'log2'],
                 }
+    
     #this helps with the way kf will generate indices below
     # X, y = np.array(X_train), np.array(y_train)
     # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
