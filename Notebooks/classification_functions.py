@@ -46,7 +46,7 @@ def multinomial_nb(X_train, y_train, b):
           
     return 'mnb'
 
-def random_forest(X_train, y_train,  b):
+def random_forest(X_train, y_train):
 
     rf = RandomForestClassifier()
     grid_param = {
@@ -55,7 +55,7 @@ def random_forest(X_train, y_train,  b):
                     'max_features': ['auto', 'sqrt', 'log2'],
                     'max_depth' : [4,5,6,7,8]
                 }
-    rs = RandomizedSearchCV(rf, param_distributions= grid_param, cv=5, n_iter=50)
+    rs = RandomizedSearchCV(rf, param_distributions= grid_param, cv=5, n_iter=50, n_jobs=-1)
     rs.fit(X_train, y_train)
 
     metrics = calc_cv_scores(rs, X_train, y_train)
@@ -64,105 +64,103 @@ def random_forest(X_train, y_train,  b):
     precision = metrics[1]
     recall = metrics[2] 
     f1 = metrics[3]
-    fbeta = metrics[4]
-    auc = metrics[5]
-    logl = metrics[6]
+    auc = metrics[4]
+    logl = metrics[5]
 
     print(f'Random Forest with params:\n')
     print(rs.best_params_)
-    get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
+    get_scores(ac, precision, recall, f1, auc, logl)
     plot_roc(y_train, X_train, rs)
           
     return rs
 
 def decision_tree(X_train, y_train, depth, b):
     #this helps with the way kf will generate indices below
-    X, y = np.array(X_train), np.array(y_train)
-    kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
+    # X, y = np.array(X_train), np.array(y_train)
+    # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
+    # precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
 
-    for train_ind, val_ind in kf.split(X, y):
-        X_train, y_train = X[train_ind], y[train_ind]
-        X_val, y_val = X[val_ind], y[val_ind]
+    # for train_ind, val_ind in kf.split(X, y):
+    #     X_train, y_train = X[train_ind], y[train_ind]
+    #     X_val, y_val = X[val_ind], y[val_ind]
 
-        dt = DecisionTreeClassifier(max_depth=depth)
-        dt.fit(X_train, y_train)
+    #     dt = DecisionTreeClassifier(max_depth=depth)
+    #     dt.fit(X_train, y_train)
 
-        metrics = calc_scores(dt, X_val, y_val, b)
+    #     metrics = calc_scores(dt, X_val, y_val)
 
-        ac.append(metrics[0])
-        precision.append(metrics[1])
-        recall.append(metrics[2])
-        f1.append(metrics[3])
-        fbeta.append(metrics[4]) 
-        auc.append(metrics[5])
-        logl.append(metrics[6])
+    #     ac.append(metrics[0])
+    #     precision.append(metrics[1])
+    #     recall.append(metrics[2])
+    #     f1.append(metrics[3])
+    #     auc.append(metrics[5])
+    #     logl.append(metrics[6])
 
-    print(f'Decision Tree with max depth of {depth}:\n')
-    get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-    plot_roc(y_val, X_val, dt)
+    # print(f'Decision Tree with max depth of {depth}:\n')
+    # get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
+    # plot_roc(y_val, X_val, dt)
           
-    return dt
+    return 'dt'
 
 def logistic_model(X_train, y_train, regularization, b):
     #this helps with the way kf will generate indices below
-    X, y = np.array(X_train), np.array(y_train)
-    kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    precision, recall, f1, fbeta, auc, logl , ac = [] , [], [], [], [], [], []
+    # X, y = np.array(X_train), np.array(y_train)
+    # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
+    # precision, recall, f1, fbeta, auc, logl , ac = [] , [], [], [], [], [], []
 
-    for train_ind, val_ind in kf.split(X, y):
-        X_train, y_train = X[train_ind], y[train_ind]
-        X_val, y_val = X[val_ind], y[val_ind]
+    # for train_ind, val_ind in kf.split(X, y):
+    #     X_train, y_train = X[train_ind], y[train_ind]
+    #     X_val, y_val = X[val_ind], y[val_ind]
 
-        lm = LogisticRegression(C=regularization, max_iter=10000)
-        lm.fit(X_train, y_train)
+    #     lm = LogisticRegression(C=regularization, max_iter=10000)
+    #     lm.fit(X_train, y_train)
 
-        metrics = calc_scores(lm, X_val, y_val, b)
+    #     metrics = calc_scores(lm, X_val, y_val, b)
 
-        ac.append(metrics[0])
-        precision.append(metrics[1])
-        recall.append(metrics[2])
-        f1.append(metrics[3])
-        fbeta.append(metrics[4]) 
-        auc.append(metrics[5])
-        logl.append(metrics[6])
+    #     ac.append(metrics[0])
+    #     precision.append(metrics[1])
+    #     recall.append(metrics[2])
+    #     f1.append(metrics[3])
+    #     fbeta.append(metrics[4]) 
+    #     auc.append(metrics[5])
+    #     logl.append(metrics[6])
 
-    print(f'logistic regression with C = {regularization}:\n')
-    get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-    plot_roc(y_val, X_val, lm)
+    # print(f'logistic regression with C = {regularization}:\n')
+    # get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
+    # plot_roc(y_val, X_val, lm)
           
-    return lm
+    return 'lm'
 
 def knn_classification(X_train, y_train, k, b):
     #this helps with the way kf will generate indices below
-    X, y = np.array(X_train), np.array(y_train)
-    kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
-    precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
+    # X, y = np.array(X_train), np.array(y_train)
+    # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
+    # precision, recall, f1, fbeta, auc, logl, ac = [] , [], [], [], [], [], []
 
-    for train_ind, val_ind in kf.split(X, y):
-        X_train, y_train = X[train_ind], y[train_ind]
-        X_val, y_val = X[val_ind], y[val_ind]
+    # for train_ind, val_ind in kf.split(X, y):
+    #     X_train, y_train = X[train_ind], y[train_ind]
+    #     X_val, y_val = X[val_ind], y[val_ind]
 
-        knn = KNeighborsClassifier(n_neighbors=k) #k nearest neighbors
-        knn.fit(X_train, y_train)
+    #     knn = KNeighborsClassifier(n_neighbors=k) #k nearest neighbors
+    #     knn.fit(X_train, y_train)
 
-        metrics = calc_scores(knn, X_val, y_val, b)
+    #     metrics = calc_scores(knn, X_val, y_val, b)
 
-        ac.append(metrics[0])
-        precision.append(metrics[1])
-        recall.append(metrics[2])
-        f1.append(metrics[3])
-        fbeta.append(metrics[4]) 
-        auc.append(metrics[5])
-        logl.append(metrics[6])
+    #     ac.append(metrics[0])
+    #     precision.append(metrics[1])
+    #     recall.append(metrics[2])
+    #     f1.append(metrics[3])
+    #     fbeta.append(metrics[4]) 
+    #     auc.append(metrics[5])
+    #     logl.append(metrics[6])
 
-    print(f'KNN Classification with k = {k}:\n')
-    get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
-    plot_roc(y_val, X_val, knn)
+    # print(f'KNN Classification with k = {k}:\n')
+    # get_scores(ac, precision, recall, f1, fbeta, b, auc, logl)
+    # plot_roc(y_val, X_val, knn)
     
-    return knn
+    return 'knn'
 
-def calc_scores(model, X_val, y_val, b):
+def calc_scores(model, X_val, y_val):
 
     preds = model.predict(X_val)
     y_val_enc = pd.get_dummies(y_val)
@@ -172,11 +170,10 @@ def calc_scores(model, X_val, y_val, b):
     precision = (round(precision_score( y_val, preds, average='macro'), 3))
     recall = (round(recall_score( y_val, preds, average='macro'), 3))
     f1 = (round(f1_score( y_val, preds, average='macro'), 3))
-    fbeta = (round(fbeta_score( y_val, preds, beta = b, average='macro'), 3)) #beta times more impotance to recall than precision
     auc = (round(roc_auc_score( y_val_enc, probs, average='macro', multi_class='ovr'), 3))
     logl = (round(log_loss( y_val, probs), 3))
 
-    return [ac, precision, recall, f1, fbeta, auc, logl]
+    return [ac, precision, recall, f1, auc, logl]
 
 def calc_cv_scores(model, X_test, y_test):
     ac = round(cross_val_score(model, X_test, y_test, scoring='acuracy', cv=5).mean(), 3)
@@ -184,19 +181,15 @@ def calc_cv_scores(model, X_test, y_test):
     recall = round(cross_val_score(model, X_test, y_test, scoring='recall_macro', cv=5).mean(), 3)
     f1 = round(cross_val_score(model, X_test, y_test, scoring='f1_macro', cv=5).mean(), 3)
     auc = round(cross_val_score(model, X_test, y_test, scoring='roc_auc_ovr', cv=5).mean(), 3)
-    
-    fbeta = 0
-    
-    logl = 0
+    logl = round(cross_val_score(model, X_test, y_test, scoring='log_loss', cv=5).mean(), 3)
 
-    return [ac, precision, recall, f1, fbeta, auc, logl]
+    return [ac, precision, recall, f1, auc, logl]
 
-def get_scores(ac, precision, recall, f1, fbeta, b, auc, logl):
+def get_scores(ac, precision, recall, f1, auc, logl):
     print(f'Accuracy: {np.mean(ac)},\n'
           f'Precision score: {np.mean(precision)},\n'
           f'Recall score: {np.mean(recall)},\n'
           f'f1 score: {np.mean(f1)},\n'
-          f'fbeta score for beta = {b}: {np.mean(fbeta)},\n'
           f'ROC AUC score: {np.mean(auc)},\n'
           f'Log-loss: {np.mean(logl)},\n')
 
