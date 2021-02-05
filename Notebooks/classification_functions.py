@@ -16,7 +16,7 @@ import xgboost as xgb
 import matplotlib.pyplot as plt
 import seaborn as sns
 
-def xGBoost(X_train, y_train):
+def x_GBoost(X_train, y_train):
 
     gbm = xgb.XGBClassifier()
                       
