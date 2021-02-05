@@ -194,7 +194,7 @@ def calc_cv_scores(model, X_test, y_test):
     recall = round(cross_val_score(model, X_test, y_test, scoring='recall_macro', cv=5).mean(), 3)
     f1 = round(cross_val_score(model, X_test, y_test, scoring='f1_macro', cv=5).mean(), 3)
     auc = round(cross_val_score(model, X_test, y_test, scoring='roc_auc_ovr', cv=5).mean(), 3)
-    logl = round(cross_val_score(model, X_test, y_test, scoring='log_loss', cv=5).mean(), 3)
+    logl = round(cross_val_score(model, X_test, y_test, scoring='neg_log_loss', cv=5).mean(), 3)
 
     return [ac, precision, recall, f1, auc, logl]
 
