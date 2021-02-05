@@ -10,10 +10,43 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB, GaussianNB
+import xgboost as xgb
 
 # plotting
 import matplotlib.pyplot as plt
 import seaborn as sns
+
+def xGBoost(X_train, y_train):
+
+    gbm = xgb.XGBClassifier()
+                      
+    rand_param = {
+                    'n_estimators': [30000], 
+                    'max_depth': [3,4,5,6,7,8],
+                    'objective': ["reg:squarederror"],
+                    'learning_rate': [0.05, .1, .2, .5], 
+                    'subsample': [0.5, 0.8, 1, 1.2],
+                    'min_child_weight': [1, 4, 8, 10],
+                    'colsample_bytree': [0.5, 0.8, 1, 1.2]
+                 }
+    rs = RandomizedSearchCV(xgb, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
+    rs.fit(X_train, y_train)
+
+    metrics = calc_cv_scores(rs, X_train, y_train)
+
+    ac = metrics[0]
+    precision = metrics[1]
+    recall = metrics[2] 
+    f1 = metrics[3]
+    auc = metrics[4]
+    logl = metrics[5]
+
+    print(f'XGBoost with params:\n')
+    print(rs.best_params_)
+    get_scores(ac, precision, recall, f1, auc, logl)
+    plot_roc(y_train, X_train, rs)
+          
+    return rs
 
 # def multinomial_nb(X_train, y_train):
     
@@ -49,8 +82,8 @@ def random_forest(X_train, y_train):
     #                 'max_depth' : [2,4,5,6,7,8]
     #             }
     rand_param = {
-                    'n_estimators': [500, 800, 1000, 1200],
-                    'max_depth' : [2,4,5,6,7,8]
+                    'n_estimators': [30000],
+                    'max_depth' : [3,4,5,6,7,8]
                 }
     rs = RandomizedSearchCV(rf, param_distributions= rand_param, cv=5, n_iter=5, n_jobs=-1)
     rs.fit(X_train, y_train)
@@ -74,10 +107,28 @@ def random_forest(X_train, y_train):
 def decision_tree(X_train, y_train):
     dt = DecisionTreeClassifier()
     rand_params = {
-                    'max_depth': [2,4,6,8,10,12],
+                    'max_depth': [3,4,6,8,10,12],
                     'criterion': ['gini', 'entropy'],
                     'max_features': ['auto', 'sqrt', 'log2'],
                 }
+    rs = RandomizedSearchCV(dt, param_distributions= rand_params, cv=5, n_iter=10, n_jobs=-1)
+    rs.fit(X_train, y_train)
+
+    metrics = calc_cv_scores(rs, X_train, y_train)
+
+    ac = metrics[0]
+    precision = metrics[1]
+    recall = metrics[2] 
+    f1 = metrics[3]
+    auc = metrics[4]
+    logl = metrics[5]
+
+    print(f'Decision Tree with params:\n')
+    print(rs.best_params_)
+    get_scores(ac, precision, recall, f1, auc, logl)
+    plot_roc(y_train, X_train, rs)
+          
+    return rs
     
     #this helps with the way kf will generate indices below
     # X, y = np.array(X_train), np.array(y_train)
@@ -104,7 +155,7 @@ def decision_tree(X_train, y_train):
     # get_scores(ac, precision, recall, f1, auc, logl)
     # plot_roc(y_val, X_val, dt)
           
-    return 'dt'
+    # return 'dt'
 
 def logistic_model_scaled(X_train, y_train, regularization):
     scaler = StandardScaler()
@@ -116,6 +167,24 @@ def logistic_model_scaled(X_train, y_train, regularization):
                     'C': [0.1, 1, 10, 50, 100],
                     'penalty': ['l1', 'l2']
                 }
+    rs = RandomizedSearchCV(lm, param_distributions= rand_params, cv=5, n_iter=10, n_jobs=-1)
+    rs.fit(X_train, y_train)
+
+    metrics = calc_cv_scores(rs, X_train, y_train)
+
+    ac = metrics[0]
+    precision = metrics[1]
+    recall = metrics[2] 
+    f1 = metrics[3]
+    auc = metrics[4]
+    logl = metrics[5]
+
+    print(f'Logistic Regression with params:\n')
+    print(rs.best_params_)
+    get_scores(ac, precision, recall, f1, auc, logl)
+    plot_roc(y_train, X_train, rs)
+          
+    return rs
     #this helps with the way kf will generate indices below
     # X, y = np.array(X_train), np.array(y_train)
     # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
@@ -141,7 +210,7 @@ def logistic_model_scaled(X_train, y_train, regularization):
     # get_scores(ac, precision, recall, f1, auc, logl)
     # plot_roc(y_val, X_val, lm)
           
-    return 'lm'
+    #return 'lm'
 
 def knn_classification_scaled(X_train, y_train):
     scaler = StandardScaler()
@@ -152,6 +221,24 @@ def knn_classification_scaled(X_train, y_train):
                     'n_neighbors': [3, 4, 5, 6,7 ,8 ,9 ],
                     'p': ['l1', 'l2']
                 }
+    rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=10, n_jobs=-1)
+    rs.fit(X_train, y_train)
+
+    metrics = calc_cv_scores(rs, X_train, y_train)
+
+    ac = metrics[0]
+    precision = metrics[1]
+    recall = metrics[2] 
+    f1 = metrics[3]
+    auc = metrics[4]
+    logl = metrics[5]
+
+    print(f'Decision Tree with params:\n')
+    print(rs.best_params_)
+    get_scores(ac, precision, recall, f1, auc, logl)
+    plot_roc(y_train, X_train, rs)
+          
+    return rs
     #this helps with the way kf will generate indices below
     # X, y = np.array(X_train), np.array(y_train)
     # kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
@@ -176,7 +263,7 @@ def knn_classification_scaled(X_train, y_train):
     # print(f'KNN Classification with k = {k}:\n')
     # get_scores(ac, precision, recall, f1, auc, logl)
     # plot_roc(y_val, X_val, knn)
-    return 'knn'
+    #return 'knn'
 
 def calc_scores(model, X_val, y_val):
 
