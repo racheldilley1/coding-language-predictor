@@ -55,7 +55,7 @@ def x_GBoost(X_train, y_train):
                         X_train, y_train, 
                         eval_set=eval_set,
                         eval_metric='auc', 
-                        early_stopping_rounds=10,
+                        early_stopping_rounds=5,
                         verbose=True)
 
         metrics = calc_scores(gbm_fit, X_val, y_val)
