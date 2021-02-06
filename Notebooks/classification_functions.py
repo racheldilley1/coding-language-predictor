@@ -59,7 +59,7 @@ def x_GBoost(X_train, y_train):
                         verbose=True)
 
         metrics = calc_scores(gbm_fit, X_val, y_val)
-
+        print(metrics)
         ac.append(metrics[0])
         precision.append(metrics[1])
         recall.append(metrics[2])
