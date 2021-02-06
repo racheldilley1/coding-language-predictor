@@ -11,7 +11,7 @@ from sklearn.neighbors import KNeighborsClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.naive_bayes import BernoulliNB, MultinomialNB, GaussianNB
-import xgboost as xgb
+from xgboost import XGBClassifier
 
 # plotting
 import matplotlib.pyplot as plt
@@ -37,28 +37,30 @@ def x_GBoost(X_train, y_train):
     for train_ind, val_ind in kf.split(X, y):
         X_train, y_train = X[train_ind], y[train_ind]
         X_val, y_val = X[val_ind], y[val_ind]
+        print(X_train)
+        # gbm = XGBClassifier( 
+        #                         n_estimators=30000,
+        #                         max_depth=4,
+        #                         objective='multi:softmax',
+        #                         num_classes = 3,  
+        #                         use_label_encoder=True,
+        #                         learning_rate=.3, 
+        #                         subsample=.8,
+        #                         min_child_weight=3,
+        #                         colsample_bytree=.8,
+        #                         random_state = 0)
 
-        gbm = xgb.XGBClassifier( 
-                                n_estimators=30000,
-                                max_depth=4,
-                                objective='multi:softmax',
-                                num_classes = 3,  
-                                use_label_encoder=False,
-                                learning_rate=.05, 
-                                subsample=.8,
-                                min_child_weight=3,
-                                colsample_bytree=.8)
+        # eval_set=[(X_train,y_train),(X_val,y_val)]
+        # print(eval_set)
+        # gbm_fit = gbm.fit(
+        #                 X_train, y_train, 
+        #                 eval_set=eval_set,
+        #                 eval_metric='auc', 
+        #                 early_stopping_rounds=5,
+        #                 verbose=True)
+        gbm = XGBClassifier().fit(X_train, y_train)
 
-        eval_set=[(X_train,y_train),(X_val,y_val)]
-
-        gbm_fit = gbm.fit(
-                        X_train, y_train, 
-                        eval_set=eval_set,
-                        eval_metric='auc', 
-                        early_stopping_rounds=5,
-                        verbose=True)
-
-        metrics = calc_scores(gbm_fit, X_val, y_val)
+        metrics = calc_scores(gbm, X_val, y_val)
         print(metrics)
         ac.append(metrics[0])
         precision.append(metrics[1])
@@ -75,10 +77,10 @@ def x_GBoost(X_train, y_train):
     logl = mean(logl)
 
     print(f'XGBoost:\n')
-    get_scores(gbm_fit, precision, recall, f1, auc, logl)
-    plot_roc(y_train, X_train, gbm_fit)
+    get_scores(gbm, precision, recall, f1, auc, logl)
+    plot_roc(y_train, X_train, gbm)
           
-    return gbm_fit
+    return gbm
 
 # def multinomial_nb(X_train, y_train):
     
