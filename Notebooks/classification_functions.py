@@ -58,7 +58,8 @@ def x_GBoost(X_train, y_train):
         #                 eval_metric='auc', 
         #                 early_stopping_rounds=5,
         #                 verbose=True)
-        gbm = XGBClassifier().fit(X_train, y_train)
+        gbm = XGBClassifier()
+        gbm.fit(X_train, y_train)
 
         metrics = calc_scores(gbm, X_val, y_val)
         print(metrics)
