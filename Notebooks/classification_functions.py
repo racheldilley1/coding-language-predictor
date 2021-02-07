@@ -130,7 +130,7 @@ def random_forest(X_train, y_train):
                     'n_estimators': [30000],
                     'max_depth' : [3,4,5,6,7,8]
                 }
-    rs = RandomizedSearchCV(rf, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
+    rs = RandomizedSearchCV(rf, param_distributions= rand_param, cv=5, n_iter=6, n_jobs=-1)
     rs.fit(X_train, y_train)
 
     metrics = calc_cv_scores(rs, X_train, y_train)
@@ -184,7 +184,7 @@ def logistic_model_scaled(X_train, y_train):
                     'C': [0.1, 1, 10, 50, 100],
                     'penalty': ['l1', 'l2']
                 }
-    rs = RandomizedSearchCV(lm, param_distributions= rand_params, cv=5, n_iter=20, n_jobs=-1)
+    rs = RandomizedSearchCV(lm, param_distributions= rand_params, cv=5, n_iter=10, n_jobs=-1)
     rs.fit(X_train_scaled, y_train)
 
     metrics = calc_cv_scores(rs, X_train_scaled, y_train)
@@ -211,7 +211,7 @@ def knn_classification_scaled(X_train, y_train):
     rand_param = {
                     'n_neighbors': [3, 4, 5, 6,7 ,8 ,9 ]   
                 }
-    rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
+    rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=7, n_jobs=-1)
     rs.fit(X_train_scaled, y_train)
 
     metrics = calc_cv_scores(rs, X_train_scaled, y_train)
