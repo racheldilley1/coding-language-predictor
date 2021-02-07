@@ -4,11 +4,11 @@ import streamlit as st
 st.title('Operating System Predictor')
 #st.image()
 
-st.select('Select Gender', 
+st.selectbox('Select Gender', 
             ['Male', 'Female', 'Gender Non-Conforming'],
             'gender')
 
-st.select('Select Region', ['North America',
+st.selectbox('Select Region', ['North America',
         'South America', 'Asia', 'Europe',
         'Australia', 'Middle East', 
         'Commonwealth of Independant States',
