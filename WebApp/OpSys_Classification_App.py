@@ -4,6 +4,8 @@ import streamlit as st
 st.title('Operating System Predictor')
 #st.image()
 
+st.slider('Age', 0, 80, 30, int, key = 'age')
+
 st.selectbox('Select Gender', 
             ['Male', 'Female', 'Gender Non-Conforming'],
             key = 'gender')
