@@ -5,7 +5,7 @@ st.title('Operating System Predictor')
 #st.image()
 
 st.slider('Age', min_value = 0, max_value = 80,
-         value = 30, step = int, key = 'age')
+         value = 30,  key = 'age')
 
 st.selectbox('Select Gender', 
             ['Male', 'Female', 'Gender Non-Conforming'],
