@@ -38,17 +38,17 @@ def x_GBoost(X_train, y_train):
         X_train, y_train = X[train_ind], y[train_ind]
         X_val, y_val = X[val_ind], y[val_ind]
         #print(X_train)
-        # gbm = XGBClassifier( 
-        #                         n_estimators=30000,
-        #                         max_depth=4,
-        #                         objective='multi:softprob',
-        #                         num_classes = 3,  
-        #                         use_label_encoder=True,
-        #                         learning_rate=.3, 
-        #                         subsample=.8,
-        #                         min_child_weight=3,
-        #                         colsample_bytree=.8,
-        #                         random_state = 0)
+        params = { 
+                    'n_estimators':30000,
+                    'max_depth':10,
+                    'objective':'multi:softprob',
+                    'num_classes' :3,  
+                    'use_label_encoder':False,
+                    'learning_rate':.3, 
+                    'subsample':.8,
+                    'min_child_weight':3,
+                    'colsample_bytree':.8,
+                    'random_state' : 0}
 
         # eval_set=[(X_train,y_train),(X_val,y_val)]
         # print(eval_set)
@@ -58,16 +58,18 @@ def x_GBoost(X_train, y_train):
         #                 eval_metric='auc', 
         #                 early_stopping_rounds=5,
         #                 verbose=True)
-        gbm = XGBClassifier(
-                            num_estimators=1000,
-                            objective='multi:softprob',
-                            learning_rate = 0.3,
-                            num_classes = 3,
-                            subsample=.8,
-                            min_child_weight=3,
-                            colsample_bytree=.8,
-                            random_state = 0
-        )
+        # gbm = XGBClassifier(
+        #                     num_estimators=1000,
+        #                     objective='multi:softprob',
+        #                     learning_rate = 0.3,
+        #                     num_classes = 3,
+        #                     subsample=.8,
+        #                     min_child_weight=3,
+        #                     colsample_bytree=.8,
+        #                     random_state = 0
+        # )
+        gbm = XGBClassifier()
+        gbm.set_params(**params)
         gbm.fit(X_train, y_train)
 
         metrics = calc_scores(gbm, X_val, y_val)
