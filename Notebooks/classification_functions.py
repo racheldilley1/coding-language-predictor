@@ -37,11 +37,11 @@ def x_GBoost(X_train, y_train):
     for train_ind, val_ind in kf.split(X, y):
         X_train, y_train = X[train_ind], y[train_ind]
         X_val, y_val = X[val_ind], y[val_ind]
-        print(X_train)
+        #print(X_train)
         # gbm = XGBClassifier( 
         #                         n_estimators=30000,
         #                         max_depth=4,
-        #                         objective='multi:softmax',
+        #                         objective='multi:softprob',
         #                         num_classes = 3,  
         #                         use_label_encoder=True,
         #                         learning_rate=.3, 
@@ -58,11 +58,20 @@ def x_GBoost(X_train, y_train):
         #                 eval_metric='auc', 
         #                 early_stopping_rounds=5,
         #                 verbose=True)
-        gbm = XGBClassifier()
+        gbm = XGBClassifier(
+                            num_estimators=1000,
+                            objective='multi:softprob',
+                            learning_rate = 0.3,
+                            num_classes = 3,
+                            subsample=.8,
+                            min_child_weight=3,
+                            colsample_bytree=.8,
+                            random_state = 0
+        )
         gbm.fit(X_train, y_train)
 
         metrics = calc_scores(gbm, X_val, y_val)
-        print(metrics)
+        #print(metrics)
         ac.append(metrics[0])
         precision.append(metrics[1])
         recall.append(metrics[2])
@@ -79,7 +88,6 @@ def x_GBoost(X_train, y_train):
 
     print(f'XGBoost:\n')
     get_scores(gbm, precision, recall, f1, auc, logl)
-    plot_roc(y_train, X_train, gbm)
           
     return gbm
 
@@ -135,7 +143,6 @@ def random_forest(X_train, y_train):
     print(f'Random Forest with params:\n')
     print(rs.best_params_)
     get_scores(ac, precision, recall, f1, auc, logl)
-    plot_roc(y_train, X_train, rs)
           
     return rs
 
@@ -161,7 +168,6 @@ def decision_tree(X_train, y_train):
     print(f'Decision Tree with params:\n')
     print(rs.best_params_)
     get_scores(ac, precision, recall, f1, auc, logl)
-    plot_roc(y_train, X_train, rs)
           
     return rs
     
@@ -191,7 +197,6 @@ def logistic_model_scaled(X_train, y_train):
     print(f'Logistic Regression with params:\n')
     print(rs.best_params_)
     get_scores(ac, precision, recall, f1, auc, logl)
-    plot_roc(y_train, X_train_scaled, rs)
           
     return rs
 
@@ -219,7 +224,6 @@ def knn_classification_scaled(X_train, y_train):
     print(f'KNN with params:\n')
     print(rs.best_params_)
     get_scores(ac, precision, recall, f1, auc, logl)
-    plot_roc(y_train, X_train_scaled, rs)
           
     return rs
 
