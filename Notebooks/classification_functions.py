@@ -44,7 +44,7 @@ def x_GBoost(X_train, y_train):
                     'max_depth':10,
                     # 'objective':'multi:softprob',
                     # 'num_classes' :3,  
-                    'use_label_encoder':False,
+                    #'use_label_encoder':False,
                     'learning_rate':.3, 
                     'subsample':.8,
                     'min_child_weight':3,
