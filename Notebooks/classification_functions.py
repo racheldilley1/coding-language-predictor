@@ -35,6 +35,7 @@ def x_GBoost(X_train, y_train):
     precision, recall, f1,  auc, logl, ac = [] , [], [], [], [], []
 
     for train_ind, val_ind in kf.split(X, y):
+        
         X_train, y_train = X[train_ind], y[train_ind]
         X_val, y_val = X[val_ind], y[val_ind]
         #print(X_train)
@@ -48,7 +49,9 @@ def x_GBoost(X_train, y_train):
                     'subsample':.8,
                     'min_child_weight':3,
                     'colsample_bytree':.8,
-                    'random_state' : 0}
+                    'random_state' : 0,
+                    'verbosity' : 0,
+                    'n_jobs' : -1}
 
         # eval_set=[(X_train,y_train),(X_val,y_val)]
         # print(eval_set)
