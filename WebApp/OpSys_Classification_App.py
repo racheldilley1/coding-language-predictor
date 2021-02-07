@@ -6,13 +6,13 @@ st.title('Operating System Predictor')
 
 st.selectbox('Select Gender', 
             ['Male', 'Female', 'Gender Non-Conforming'],
-            'gender')
+            key = 'gender')
 
 st.selectbox('Select Region', ['North America',
         'South America', 'Asia', 'Europe',
         'Australia', 'Middle East', 
         'Commonwealth of Independant States',
-        'Africa', 'Baltics'], 'region')
+        'Africa', 'Baltics'], key = 'region')
 
 st.multiselect('Select Coding Languages', 
                 ['JavaScript', 'Python', 'SQL', 'HTML/CSS', 'Java'],
