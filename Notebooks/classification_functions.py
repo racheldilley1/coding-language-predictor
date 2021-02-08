@@ -92,7 +92,7 @@ def x_GBoost(X_train, y_train):
     logl = mean(logl)
 
     print(f'XGBoost:\n')
-    get_scores(gbm, precision, recall, f1, auc, logl)
+    get_scores(ac, precision, recall, f1, auc, logl)
           
     return gbm
 
@@ -130,10 +130,13 @@ def random_forest(X_train, y_train):
     #                 'max_depth' : [2,4,5,6,7,8]
     #             }
     rand_param = {
-                    'n_estimators': [30000],
-                    'max_depth' : [3,4,5,6,7,8]
+                    'n_estimators': [500, 1000, 2000, 5000],
+                    'max_features': ['auto', 'sqrt'],
+                    'max_depth' : [ 20, 30, 40, 50, 70, 90,  'None'],
+                    'min_samples_leaf': [1, 2,4],
+                    'min_samples_split': [2, 5, 10]
                 }
-    rs = RandomizedSearchCV(rf, param_distributions= rand_param, cv=5, n_iter=6, n_jobs=-1)
+    rs = RandomizedSearchCV(rf, param_distributions= rand_param, cv=5, n_iter=20, n_jobs=-1)
     rs.fit(X_train, y_train)
 
     metrics = calc_cv_scores(rs, X_train, y_train)
