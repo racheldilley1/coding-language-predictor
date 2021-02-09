@@ -43,7 +43,7 @@ st.multiselect('Select Coding Languages',
                 ['JavaScript', 'Python', 'SQL', 'HTML/CSS', 'Java'],
                 key = 'language')
 
-with open("../Models/xgb_balanced.pkl", "wb") as f:
+with open("../Models/xgb_balanced.pkl", "rb") as f:
     xgb_model = pkl.load(f)
 
 if st.button('Get Prediction', 'predict'):

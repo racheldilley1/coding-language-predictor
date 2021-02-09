@@ -18,22 +18,11 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 def x_GBoost(X_train, y_train):
-              
-    # rand_param = {
-    #                 'n_estimators': [30000], 
-    #                 'max_depth': [3,7],
-    #                 'objective': ["reg:squarederror"],
-    #                 'learning_rate': [0.05, .2], 
-    #                 'subsample': [0.5, 0.8],
-    #                 'min_child_weight': [1, 8],
-    #                 'colsample_bytree': [0.5, 0.8]
-    #              }
 
     #this helps with the way kf will generate indices below
     X, y = np.array(X_train), np.array(y_train)
     kf = KFold(n_splits=5, shuffle=True, random_state=23) #randomly shuffle before splitting
     precision, recall, f1,  auc, logl, ac = [] , [], [], [], [], []
-
     for train_ind, val_ind in kf.split(X, y):
         
         X_train, y_train = X[train_ind], y[train_ind]
@@ -96,29 +85,7 @@ def x_GBoost(X_train, y_train):
           
     return gbm
 
-# def multinomial_nb(X_train, y_train):
-    
-#     params = {
-#                 'alpha': range(10)
-#             }
-#     nb = MultinomialNB()
-#     rs = RandomizedSearchCV(nb, param_grid=params, cv=5, n_iter=30, n_jobs=-1)
-#     rs.fit(X_train, y_train)
 
-#     metrics = calc_cv_scores(rs, X_val, y_val)
-
-#     ac.append(metrics[0])
-#     precision.append(metrics[1])
-#     recall.append(metrics[2])
-#     f1.append(metrics[3])
-#     auc.append(metrics[5])
-#     logl.append(metrics[6])
-
-#     print(f'Multinomial NB:\n')
-#     get_scores(ac, precision, recall, f1, auc, logl)
-#     plot_roc(y_val, X_val, rs)
-          
-#     return 'mnb'
 
 def random_forest(X_train, y_train):
 
