@@ -48,6 +48,6 @@ with open("../Models/xgb_balanced.pkl", "wb") as f:
 
 if st.button('Get Prediction', 'predict'):
 
-    OpSys = 'xgb_model.feature_names'
+    OpSys = xgb_model.feature_names
     st.write('The Prediction is: ', OpSys)
 
