@@ -112,8 +112,8 @@ if st.button('Get Prediction'):
     
     #st.dataframe(input_variables)
     OpSys = model.predict(input_variables.iloc[0:1,:])
-    probs = model.predict_proba(input_variables.iloc[0:1,:])
-    st.write('Prediction: ', OpSys[0])
+    probs = model.predict_proba(input_variables.iloc[0:1,:] >= 0.4)
+    #st.write('Prediction: ', OpSys[0])
     linux = np.round(probs[0,0]*100)
     mac = np.round(probs[0,1]*100)
     windows = np.round(probs[0,2]*100)
