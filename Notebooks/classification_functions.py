@@ -42,30 +42,12 @@ def x_GBoost(X_train, y_train):
                     'verbosity' : 0,
                     'n_jobs' : -1}
 
-        # eval_set=[(X_train,y_train),(X_val,y_val)]
-        # print(eval_set)
-        # gbm_fit = gbm.fit(
-        #                 X_train, y_train, 
-        #                 eval_set=eval_set,
-        #                 eval_metric='auc', 
-        #                 early_stopping_rounds=5,
-        #                 verbose=True)
-        # gbm = XGBClassifier(
-        #                     num_estimators=1000,
-        #                     objective='multi:softprob',
-        #                     learning_rate = 0.3,
-        #                     num_classes = 3,
-        #                     subsample=.8,
-        #                     min_child_weight=3,
-        #                     colsample_bytree=.8,
-        #                     random_state = 0
-        # )
         gbm = XGBClassifier()
         gbm.set_params(**params)
         gbm.fit(X_train, y_train)
 
         metrics = calc_scores(gbm, X_val, y_val)
-        #print(metrics)
+        
         ac.append(metrics[0])
         precision.append(metrics[1])
         recall.append(metrics[2])
@@ -90,16 +72,11 @@ def x_GBoost(X_train, y_train):
 def random_forest(X_train, y_train):
 
     rf = RandomForestClassifier()
-    # rand_param = {
-    #                 'n_estimators': [500, 800, 1000, 1200],
-    #                 'criterion': ['gini', 'entropy'],
-    #                 'max_features': ['auto', 'sqrt', 'log2'],
-    #                 'max_depth' : [2,4,5,6,7,8]
-    #             }
+
     rand_param = {
-                    'n_estimators': [500,  5000],
+                    'n_estimators': [200, 500, 1000],
                     'max_features': ['auto', 'sqrt'],
-                    'max_depth' : [ 20,  60],
+                    'max_depth' : [ 5, 10, 30],
                     'min_samples_leaf': [1, 4],
                     'min_samples_split': [2, 8]
                 }
@@ -124,7 +101,7 @@ def random_forest(X_train, y_train):
 def decision_tree(X_train, y_train):
     dt = DecisionTreeClassifier()
     rand_params = {
-                    'max_depth': [3,4,6,8,10,12, 14],
+                    'max_depth': [3,6,12, 20],
                     'criterion': ['gini', 'entropy'],
                     'max_features': ['auto', 'sqrt', 'log2'],
                 }
@@ -154,7 +131,7 @@ def logistic_model_scaled(X_train, y_train):
 
     rand_params = {
                     'max_iter': [10000],
-                    'C': [0.1, 1, 10, 50, 100],
+                    'C': [0.1, 1, 10, 50],
                     'penalty': ['l1', 'l2']
                 }
     rs = RandomizedSearchCV(lm, param_distributions= rand_params, cv=5, n_iter=10, n_jobs=-1)
@@ -182,9 +159,9 @@ def knn_classification_scaled(X_train, y_train):
     knn = KNeighborsClassifier()
 
     rand_param = {
-                    'n_neighbors': [3, 4, 5, 6,7 ,8 ,9 ]   
+                    'n_neighbors': [3, 5, 7 , 10  ]   
                 }
-    rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=7, n_jobs=-1)
+    rs = RandomizedSearchCV(knn, param_distributions= rand_param, cv=5, n_iter=3, n_jobs=-1)
     rs.fit(X_train_scaled, y_train)
 
     metrics = calc_cv_scores(rs, X_train_scaled, y_train)
