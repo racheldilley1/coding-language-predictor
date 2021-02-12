@@ -300,7 +300,7 @@ def get_scores(ac, precision, recall, f1, auc, logl):
           f'ROC AUC score: {auc},\n'
           f'Negative Log-loss: {logl},\n')
 
-def conf_matrix(model, X_test, y_test):
+def confusion_matrix(model, X_test, y_test):
     '''
     A fucntion for plotting the confusion matrix
 
