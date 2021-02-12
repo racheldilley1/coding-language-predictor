@@ -1,6 +1,6 @@
 # Operating System Predictor
 
-Play around with the model and make predictions using the [Operating System Predictor] web app created using [Streamlit](https://www.streamlit.io/).
+Play around with the model and make predictions using the [Operating System Predictor] web app that I created using [Streamlit](https://www.streamlit.io/).
 
 -----------------
 
