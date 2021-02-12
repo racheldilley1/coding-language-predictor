@@ -1,10 +1,11 @@
 import streamlit as st
-import pickle as pkl
+# import pickle as pkl
 import pandas as pd
 import numpy as np
+import joblib
 
-
-model = pkl.load(open("../Models/xgb_balanced.pkl", "rb"))   
+f = '../Models/xgboost_baeline.joblib'
+model = joblib.load(f) 
 
 st.title('Operating System Predictor')
 #st.image()
