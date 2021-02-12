@@ -1,8 +1,12 @@
 # Operating System Predictor
 
+Play around with the model and make predictions using the [Operating System Predictor] web app created using [Streamlit](https://www.streamlit.io/).
+
+-----------------
+
 ### Objective:
 
-Build a supervised classifiaction model to to predict whether a coder uses a Windows, MacOS, or Linux operating system.
+Build a supervised classifiaction model to to predict whether a coder uses a Windows, MacOS, or Linux operating system. 
 
 -----------------
 
@@ -28,11 +32,11 @@ The features used in the model were age, region, gender, education level, underg
 
 ### Data:
 
-Over 70,000 records used to create the model were collected from 2019 and 2020 [Stack Overflow Data](https://insights.stackoverflow.com/survey). A [county dataset](https://www.kaggle.com/fernandol/countries-of-the-world#__sid=js0) was used to get data for the region feature. 
+Over 70,000 records used to create the model were collected from 2019 and 2020 [Stack Overflow survey data](https://insights.stackoverflow.com/survey). A [county dataset](https://www.kaggle.com/fernandol/countries-of-the-world#__sid=js0) was used to get data for the region feature. 
 
 -----------------
 
 ### Results Summary:
 
-
+A gradient boosting model was chosen with hyperparameters of  estimators, max depth, learning rate, subsample, minimum child weight, and column sample by tree to optimize for F1. On the test data, the model had an F1 of and an ROC AUC of . 
 
