@@ -1,5 +1,7 @@
 # Operating System Predictor
 
+-----------------
+
 ### Objective:
 
 Build a supervised classifiaction model to to predict whether a coder uses a Windows, MacOS, or Linux operating system.
@@ -22,6 +24,7 @@ The features used in the model were age, region, gender, education level, underg
 
 ### Data
 
+Over 70,000 records used to create the model were collected from 2019 and 2020 [Stack Overflow Data](https://insights.stackoverflow.com/survey). A [county dataset](https://www.kaggle.com/fernandol/countries-of-the-world#__sid=js0) was used to get data for the region feature. 
 
 
 
