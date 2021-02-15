@@ -1,6 +1,6 @@
 # Operating System Predictor
 
-Play around with the model and make predictions using the [Operating System Predictor](http://192.168.1.71:8501/) web app that I created using [Streamlit](https://www.streamlit.io/).
+Play around with the model and make predictions using the [Operating System Predictor](http://192.168.1.71:8501/) web app that I created using [Streamlit](https://www.streamlit.io/)(not currently working).
 
 -----------------
 
@@ -40,5 +40,5 @@ Over 70,000 records used to create the model were collected from 2019 and 2020 [
 
 ### Results Summary:
 
-A gradient boosting model was chosen with hyperparameters of  estimators, max depth, learning rate, subsample, minimum child weight, and column sample by tree to optimize for F1. On the test data, the model had an F1 of and an ROC AUC of . 
+A gradient boosting model was chosen to optimize for F1. On the test data, the model had an F1, precision, and recall of 0.55. 
 
