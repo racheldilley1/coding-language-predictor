@@ -4,7 +4,7 @@ import pandas as pd
 import numpy as np
 import joblib
 
-f = '../Models/xgboost_baeline.joblib'
+f = '../Models/xgboost_baseline.joblib'
 model = joblib.load(f) 
 
 st.title('Operating System Predictor')
