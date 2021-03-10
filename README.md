@@ -1,6 +1,6 @@
 # Operating System Predictor
 
-Play around with the model and make predictions using the [Operating System Predictor](http://192.168.1.71:8501/) web app that I created using [Streamlit](https://www.streamlit.io/)(not currently working).
+Play around with the model and make predictions using the [Operating System Predictor](http://192.168.1.71:8501/) web app that I created using [Streamlit](https://www.streamlit.io/)(not currently live).
 
 -----------------
 
