@@ -34,7 +34,7 @@ Baseline modeling was done using only a select few features (age, region, gender
 
 ### Data:
 
-Over 70,000 records used to create the model were collected from 2019 and 2020 [Stack Overflow survey data](https://insights.stackoverflow.com/survey). A [county dataset](https://www.kaggle.com/fernandol/countries-of-the-world#__sid=js0) was used to get data for the region feature. 
+Over 70,000 records used to create the model were collected from 2019 and 2020 [Stack Overflow survey data](https://insights.stackoverflow.com/survey). A [country dataset](https://www.kaggle.com/fernandol/countries-of-the-world#__sid=js0) was used to get data for the region feature. 
 
 -----------------
 
